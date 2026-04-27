@@ -1,212 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Mankind Global | NexPath AI</title>
+  <meta charset="UTF-8">
+  <title>Global Drive Aid - Request Help</title>
 
-<style>
-body {
-  margin: 0;
-  overflow: hidden;
-  font-family: Arial, sans-serif;
-  background: radial-gradient(circle at center, #03060f, #000);
-  color: white;
-}
+  <style>
+    body {
+      background: #0a0f1f;
+      font-family: Arial, sans-serif;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
 
-#overlay {
-  position: absolute;
-  top: 50%;
-  left: 6%;
-  transform: translateY(-50%);
-  max-width: 520px;
-  z-index: 10;
-}
+    .form-box {
+      background: rgba(255,255,255,0.05);
+      padding: 25px;
+      border-radius: 12px;
+      width: 350px;
+      backdrop-filter: blur(10px);
+    }
 
-h1 { font-size: 52px; margin: 0; }
-h2 { font-size: 16px; color: #00cfff; margin-bottom: 20px; }
+    input, select, textarea {
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+    }
 
-p { opacity: 0.85; line-height: 1.6; }
-
-.btn {
-  margin-top: 20px;
-  padding: 12px 22px;
-  border-radius: 30px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-}
-
-.primary {
-  background: linear-gradient(45deg, #ff7a18, #ffb347);
-  color: white;
-}
-
-.secondary {
-  background: transparent;
-  border: 1px solid #00cfff;
-  color: #00cfff;
-  margin-left: 10px;
-}
-
-/* FORM */
-#formModal {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.9);
-  display: none;
-  justify-content: center;
-  align-items: center;
-  z-index: 20;
-}
-
-.form-container {
-  background: #0b0f1a;
-  padding: 25px;
-  border-radius: 10px;
-  width: 90%;
-  max-width: 420px;
-}
-
-input, textarea, select {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-  background: #111827;
-  border: none;
-  color: white;
-  border-radius: 5px;
-}
-
-.submit-btn {
-  margin-top: 15px;
-  width: 100%;
-  background: #00cfff;
-  color: black;
-  font-weight: bold;
-}
-
-#hud {
-  position: absolute;
-  top: 20px;
-  right: 30px;
-  font-size: 12px;
-  opacity: 0.7;
-}
-</style>
+    button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(90deg, #00f5ff, #00ff87);
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
 </head>
 
 <body>
 
-<div id="overlay">
-  <h1>MANKIND GLOBAL</h1>
-  <h2>Powered by NexPath AI</h2>
+<div class="form-box">
+  <h2>Request Help</h2>
 
-  <p>
-    A Global Humanitarian Intelligence System delivering aid, restoring dignity,
-    and connecting humanity across borders through advanced technology.
-  </p>
+  <form id="helpForm">
 
-  <button class="btn primary" onclick="openForm()">Request Help</button>
-  <button class="btn secondary">Donate</button>
+    <input type="text" name="name" placeholder="Your Name" required>
+    
+    <input type="text" name="location" placeholder="Location (Country / City)" required>
+
+    <select name="type_of_help" required>
+      <option value="">Type of Help</option>
+      <option>Food</option>
+      <option>Shelter</option>
+      <option>Medical</option>
+      <option>Other</option>
+    </select>
+
+    <textarea name="message" placeholder="Describe your situation..." required></textarea>
+
+    <input type="email" name="email" placeholder="Your Email" required>
+
+    <button type="submit">Submit Request</button>
+
+  </form>
 </div>
-
-<div id="hud">
-  <div>GLOBAL NETWORK: ACTIVE</div>
-  <div>NODES ONLINE: 12,483</div>
-  <div>AID REQUESTS: LIVE</div>
-</div>
-
-<!-- FORM -->
-<div id="formModal">
-  <div class="form-container">
-    <h3>Request Help</h3>
-
-    <form id="helpForm">
-
-      <input type="text" name="Name" placeholder="Full Name" required>
-      <input type="text" name="Location" placeholder="Your Location" required>
-
-      <select name="Type of Help">
-        <option>Food</option>
-        <option>Shelter</option>
-        <option>Medical</option>
-        <option>Other</option>
-      </select>
-
-      <textarea name="Message" placeholder="Describe your situation..." required></textarea>
-
-      <input type="email" name="Email" placeholder="Your Email" required>
-
-      <button type="submit" class="submit-btn">Submit Request</button>
-    </form>
-
-    <button onclick="closeForm()" style="margin-top:10px;">Close</button>
-  </div>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <script>
-function openForm(){ document.getElementById("formModal").style.display="flex"; }
-function closeForm(){ document.getElementById("formModal").style.display="none"; }
-
-// 🔥 SEND TO BOTH ZAPIER + EMAIL
-document.getElementById("helpForm").addEventListener("submit", function(e) {
+document.getElementById("helpForm").addEventListener("submit", async function(e) {
   e.preventDefault();
 
-  const formData = new FormData(this);
+  const form = e.target;
+  const data = new FormData(form);
 
-  // 👉 SEND TO ZAPIER (GOOGLE SHEETS)
-  fetch("https://hooks.zapier.com/hooks/catch/27381366/uv44eeh/", {
-    method: "POST",
-    body: formData
-  });
-
-  // 👉 SEND TO EMAIL (FormSubmit)
+  // 1️⃣ SEND TO FORMSUBMIT (EMAIL)
   fetch("https://formsubmit.co/help@globaldriveaid.com", {
     method: "POST",
-    body: formData
+    body: data
+  });
+
+  // 2️⃣ SEND TO ZAPIER (GOOGLE SHEETS)
+  fetch("https://hooks.zapier.com/hooks/catch/27381366/uv44eeh/", {
+    method: "POST",
+    body: data
   });
 
   alert("Request submitted successfully");
-  this.reset();
-  closeForm();
+
+  form.reset();
 });
-
-// 🌍 GLOBE
-let scene, camera, renderer, globe;
-
-function init() {
-  scene = new THREE.Scene();
-
-  camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-  camera.position.z = 3;
-
-  renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  document.body.appendChild(renderer.domElement);
-
-  const geometry = new THREE.SphereGeometry(1, 64, 64);
-  const material = new THREE.MeshBasicMaterial({
-    color: 0x00cfff,
-    wireframe: true
-  });
-
-  globe = new THREE.Mesh(geometry, material);
-  scene.add(globe);
-
-  animate();
-}
-
-function animate() {
-  requestAnimationFrame(animate);
-  globe.rotation.y += 0.002;
-  renderer.render(scene, camera);
-}
-
-window.onload = init;
 </script>
 
 </body>
