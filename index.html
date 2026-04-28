@@ -12,7 +12,7 @@ body {
   background: black;
 }
 
-/* Canvas (Globe) */
+/* Globe canvas */
 #globeCanvas {
   position: fixed;
   top: 0;
@@ -22,17 +22,17 @@ body {
   z-index: 0;
 }
 
-/* Form container */
+/* Form */
 .form-container {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.4);
   padding: 25px;
   border-radius: 12px;
-  z-index: 2;
   width: 320px;
+  z-index: 2;
   backdrop-filter: blur(10px);
 }
 
@@ -69,7 +69,7 @@ button {
 
   <input id="name" placeholder="Your Name">
   <input id="location" placeholder="Location">
-  
+
   <select id="type">
     <option>Shelter</option>
     <option>Food</option>
@@ -86,48 +86,66 @@ button {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <script>
-// 🌍 Scene
+// SCENE
 const scene = new THREE.Scene();
 
-// Camera
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+// CAMERA
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
+);
+camera.position.z = 3;
 
-// Renderer
-const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("globeCanvas") });
+// RENDERER
+const renderer = new THREE.WebGLRenderer({
+  canvas: document.getElementById("globeCanvas"),
+  antialias: true
+});
 renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setClearColor(0x000000);
 
-// Globe
-const geometry = new THREE.SphereGeometry(2, 64, 64);
+// GLOBE
+const geometry = new THREE.SphereGeometry(3.5, 64, 64);
 
-// 🌍 TEXTURE (IMPORTANT)
 const texture = new THREE.TextureLoader().load(
   "https://threejs.org/examples/textures/land_ocean_ice_cloud_2048.jpg"
 );
 
-const material = new THREE.MeshBasicMaterial({ map: texture });
+const material = new THREE.MeshPhongMaterial({
+  map: texture,
+  shininess: 10
+});
 
 const globe = new THREE.Mesh(geometry, material);
+globe.position.z = -1;
 scene.add(globe);
 
-camera.position.z = 5;
+// LIGHTING (VERY IMPORTANT)
+const light = new THREE.PointLight(0xffffff, 5);
+light.position.set(5, 5, 5);
+scene.add(light);
 
-// Animation
+const ambient = new THREE.AmbientLight(0xffffff, 1);
+scene.add(ambient);
+
+// ANIMATION
 function animate() {
   requestAnimationFrame(animate);
   globe.rotation.y += 0.002;
   renderer.render(scene, camera);
 }
-
 animate();
 
-// Resize fix
-window.addEventListener('resize', () => {
+// RESIZE FIX
+window.addEventListener("resize", () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
-  camera.aspect = window.innerWidth/window.innerHeight;
+  camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
 });
 
-// 🚀 FORM SUBMIT (Zapier)
+// ZAPIER FORM
 function submitForm() {
   fetch("https://hooks.zapier.com/hooks/catch/27381366/uv44eeh/", {
     method: "POST",
