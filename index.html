@@ -4,15 +4,25 @@
 <meta charset="UTF-8">
 <title>Mankind Global</title>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
-
 <style>
 body {
   margin: 0;
-  overflow: hidden;
   font-family: Arial, sans-serif;
-  background: black;
   color: white;
+  background: black;
+  overflow: hidden;
+}
+
+/* BACKGROUND IMAGE */
+.bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('https://images.unsplash.com/photo-1581091215367-59ab6b5f9b1d?auto=format&fit=crop&w=1920&q=80') no-repeat center center/cover;
+  z-index: 0;
+  filter: brightness(0.4);
 }
 
 /* LEFT PANEL */
@@ -21,7 +31,7 @@ body {
   left: 60px;
   top: 50%;
   transform: translateY(-50%);
-  max-width: 400px;
+  max-width: 420px;
   z-index: 2;
 }
 
@@ -37,19 +47,21 @@ body {
 .left-panel p {
   margin-top: 20px;
   line-height: 1.5;
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
+/* BUTTONS */
 .btn {
   margin-top: 20px;
   padding: 12px 20px;
   border: none;
   cursor: pointer;
   margin-right: 10px;
+  border-radius: 6px;
 }
 
 .btn-primary {
-  background: orange;
+  background: linear-gradient(45deg, orange, #ff6600);
   color: white;
 }
 
@@ -85,23 +97,30 @@ body {
   color: lime;
 }
 
-/* CANVAS */
-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
+/* OVERLAY FOR DEPTH */
+.overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, transparent 20%, black 90%);
+  z-index: 1;
 }
 </style>
 </head>
 
 <body>
 
+<div class="bg"></div>
+<div class="overlay"></div>
+
 <!-- LEFT -->
 <div class="left-panel">
   <h1>MANKIND <span>GLOBAL</span></h1>
+
   <p>
     A global humanitarian intelligence system delivering aid,
-    restoring dignity, and connecting humanity through technology.
+    restoring dignity, and connecting humanity across borders
+    through technology and compassion.
   </p>
 
   <button class="btn btn-primary">Request Aid</button>
@@ -110,6 +129,7 @@ canvas {
 
 <!-- RIGHT -->
 <div class="right-panel">
+
   <div class="card">
     <h3>System Status</h3>
     <div class="status">● ONLINE</div>
@@ -128,31 +148,8 @@ canvas {
     <p>Haiti - High</p>
     <p>Yemen - High</p>
   </div>
+
 </div>
-
-<script>
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({alpha:true});
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-
-const geometry = new THREE.SphereGeometry(3, 64, 64);
-const texture = new THREE.TextureLoader().load('https://threejs.org/examples/textures/earth_atmos_2048.jpg');
-const material = new THREE.MeshBasicMaterial({ map: texture });
-
-const globe = new THREE.Mesh(geometry, material);
-scene.add(globe);
-
-camera.position.z = 6;
-
-function animate() {
-  requestAnimationFrame(animate);
-  globe.rotation.y += 0.002;
-  renderer.render(scene, camera);
-}
-animate();
-</script>
 
 </body>
 </html>
