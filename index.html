@@ -1,65 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Global Drive Aid - Request Help</title>
+<meta charset="UTF-8">
+<title>Mankind Global | NexPath AI</title>
 
-  <style>
-    body {
-      background: #0a0f1f;
-      font-family: Arial, sans-serif;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+<style>
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: Arial;
+  color: white;
+}
 
-    .form-box {
-      background: rgba(255,255,255,0.05);
-      padding: 25px;
-      border-radius: 12px;
-      width: 350px;
-      backdrop-filter: blur(10px);
-    }
+#formContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.6);
+  padding: 25px;
+  border-radius: 12px;
+  width: 320px;
+  backdrop-filter: blur(10px);
+}
 
-    input, select, textarea {
-      width: 100%;
-      margin: 8px 0;
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-    }
+input, select, textarea {
+  width: 100%;
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+}
 
-    button {
-      width: 100%;
-      padding: 12px;
-      background: linear-gradient(90deg, #00f5ff, #00ff87);
-      border: none;
-      border-radius: 6px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-  </style>
+button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(90deg,#00f5ff,#00ff87);
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+}
+</style>
 </head>
 
 <body>
 
-<div class="form-box">
+<!-- 🌍 GLOBE CANVAS -->
+<canvas id="bg"></canvas>
+
+<!-- 📩 FORM -->
+<div id="formContainer">
   <h2>Request Help</h2>
-
   <form id="helpForm">
-
     <input type="text" name="name" placeholder="Your Name" required>
-    
-    <input type="text" name="location" placeholder="Location (Country / City)" required>
+    <input type="text" name="location" placeholder="Location" required>
 
     <select name="type_of_help" required>
       <option value="">Type of Help</option>
       <option>Food</option>
       <option>Shelter</option>
       <option>Medical</option>
-      <option>Other</option>
     </select>
 
     <textarea name="message" placeholder="Describe your situation..." required></textarea>
@@ -67,32 +67,54 @@
     <input type="email" name="email" placeholder="Your Email" required>
 
     <button type="submit">Submit Request</button>
-
   </form>
 </div>
 
+<!-- 🌍 THREE.JS GLOBE -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<script>
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+
+const renderer = new THREE.WebGLRenderer({canvas: document.getElementById('bg')});
+renderer.setSize(window.innerWidth, window.innerHeight);
+
+const geometry = new THREE.SphereGeometry(5, 32, 32);
+const texture = new THREE.TextureLoader().load('https://threejs.org/examples/textures/earth_atmos_2048.jpg');
+const material = new THREE.MeshBasicMaterial({ map: texture });
+
+const globe = new THREE.Mesh(geometry, material);
+scene.add(globe);
+
+camera.position.z = 10;
+
+function animate() {
+  requestAnimationFrame(animate);
+  globe.rotation.y += 0.002;
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+
+<!-- ⚡ FORM LOGIC -->
 <script>
 document.getElementById("helpForm").addEventListener("submit", async function(e) {
   e.preventDefault();
+  const data = new FormData(this);
 
-  const form = e.target;
-  const data = new FormData(form);
-
-  // 1️⃣ SEND TO FORMSUBMIT (EMAIL)
   fetch("https://formsubmit.co/help@globaldriveaid.com", {
     method: "POST",
     body: data
   });
 
-  // 2️⃣ SEND TO ZAPIER (GOOGLE SHEETS)
   fetch("https://hooks.zapier.com/hooks/catch/27381366/uv44eeh/", {
     method: "POST",
     body: data
   });
 
   alert("Request submitted successfully");
-
-  form.reset();
+  this.reset();
 });
 </script>
 
