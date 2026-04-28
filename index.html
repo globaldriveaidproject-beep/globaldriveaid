@@ -22,13 +22,13 @@ body {
   z-index: 0;
 }
 
-/* Form */
+/* Form container */
 .form-container {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.6);
   padding: 25px;
   border-radius: 12px;
   width: 320px;
@@ -86,19 +86,19 @@ button {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
 <script>
-// SCENE
+// Scene
 const scene = new THREE.Scene();
 
-// CAMERA
+// Camera
 const camera = new THREE.PerspectiveCamera(
   75,
   window.innerWidth / window.innerHeight,
   0.1,
   1000
 );
-camera.position.z = 3;
+camera.position.z = 4.5;
 
-// RENDERER
+// Renderer
 const renderer = new THREE.WebGLRenderer({
   canvas: document.getElementById("globeCanvas"),
   antialias: true
@@ -106,31 +106,33 @@ const renderer = new THREE.WebGLRenderer({
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setClearColor(0x000000);
 
-// GLOBE
-const geometry = new THREE.SphereGeometry(3.5, 64, 64);
+// Globe geometry
+const geometry = new THREE.SphereGeometry(2.5, 64, 64);
 
+// Texture (stable + clear)
 const texture = new THREE.TextureLoader().load(
   "https://threejs.org/examples/textures/land_ocean_ice_cloud_2048.jpg"
 );
 
+// Material
 const material = new THREE.MeshPhongMaterial({
   map: texture,
-  shininess: 10
+  shininess: 5
 });
 
+// Globe mesh
 const globe = new THREE.Mesh(geometry, material);
-globe.position.z = -1;
 scene.add(globe);
 
-// LIGHTING (VERY IMPORTANT)
-const light = new THREE.PointLight(0xffffff, 5);
-light.position.set(5, 5, 5);
+// Lighting (balanced)
+const light = new THREE.PointLight(0xffffff, 1.5);
+light.position.set(5, 3, 5);
 scene.add(light);
 
-const ambient = new THREE.AmbientLight(0xffffff, 1);
+const ambient = new THREE.AmbientLight(0xffffff, 0.4);
 scene.add(ambient);
 
-// ANIMATION
+// Animation
 function animate() {
   requestAnimationFrame(animate);
   globe.rotation.y += 0.002;
@@ -138,14 +140,14 @@ function animate() {
 }
 animate();
 
-// RESIZE FIX
+// Resize
 window.addEventListener("resize", () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
 });
 
-// ZAPIER FORM
+// Zapier form
 function submitForm() {
   fetch("https://hooks.zapier.com/hooks/catch/27381366/uv44eeh/", {
     method: "POST",
