@@ -381,21 +381,89 @@ function showStatus(type, msg) {
   box.textContent = msg;
 }
 
-// ── BACKGROUND CANVAS ──
+<script>
+// ── BACKGROUND CANVAS (UPGRADED) ──
 const c = document.getElementById('bg');
 const x = c.getContext('2d');
-function resizeBg(){ c.width=window.innerWidth; c.height=window.innerHeight; }
-resizeBg(); window.addEventListener('resize',resizeBg);
-const pts = Array.from({length:80},()=>({x:Math.random()*window.innerWidth,y:Math.random()*window.innerHeight,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.5+.5}));
+
+function resizeBg(){
+  c.width = window.innerWidth;
+  c.height = window.innerHeight;
+}
+resizeBg();
+window.addEventListener('resize', resizeBg);
+
+// 🌍 clustered nodes (map-like structure)
+const nodes = [];
+const clusters = [
+  {x:0.2,y:0.4},   // Americas
+  {x:0.5,y:0.35},  // Europe
+  {x:0.55,y:0.55}, // Africa
+  {x:0.75,y:0.45}, // Asia
+  {x:0.85,y:0.75}  // Australia
+];
+
+clusters.forEach(cl=>{
+  for(let i=0;i<20;i++){
+    nodes.push({
+      x: cl.x * window.innerWidth + (Math.random()-0.5)*120,
+      y: cl.y * window.innerHeight + (Math.random()-0.5)*120,
+      vx: (Math.random()-0.5)*0.25,
+      vy: (Math.random()-0.5)*0.25
+    });
+  }
+});
+
 function drawBg(){
-  c.width=c.width;
-  const g=x.createRadialGradient(c.width/2,c.height/2,0,c.width/2,c.height/2,c.width*.7);
-  g.addColorStop(0,'rgba(0,18,48,0.98)'); g.addColorStop(1,'rgba(3,8,15,1)');
-  x.fillStyle=g; x.fillRect(0,0,c.width,c.height);
-  pts.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; if(p.x<0||p.x>c.width)p.vx*=-1; if(p.y<0||p.y>c.height)p.vy*=-1; x.beginPath(); x.arc(p.x,p.y,p.r,0,Math.PI*2); x.fillStyle='rgba(0,212,255,0.4)'; x.fill(); });
+  x.clearRect(0,0,c.width,c.height);
+
+  // deep gradient background (same style)
+  const g = x.createRadialGradient(
+    c.width/2,c.height/2,0,
+    c.width/2,c.height/2,c.width*0.7
+  );
+  g.addColorStop(0,'rgba(0,18,48,0.98)');
+  g.addColorStop(1,'rgba(3,8,15,1)');
+  x.fillStyle = g;
+  x.fillRect(0,0,c.width,c.height);
+
+  // move nodes
+  nodes.forEach(n=>{
+    n.x += n.vx;
+    n.y += n.vy;
+
+    if(n.x<0||n.x>c.width) n.vx *= -1;
+    if(n.y<0||n.y>c.height) n.vy *= -1;
+  });
+
+  // draw connections (network effect)
+  for(let i=0;i<nodes.length;i++){
+    for(let j=i+1;j<nodes.length;j++){
+      const dx = nodes[i].x - nodes[j].x;
+      const dy = nodes[i].y - nodes[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+
+      if(dist < 140){
+        x.strokeStyle = `rgba(0,212,255,${1 - dist/140})`;
+        x.lineWidth = 0.5;
+        x.beginPath();
+        x.moveTo(nodes[i].x,nodes[i].y);
+        x.lineTo(nodes[j].x,nodes[j].y);
+        x.stroke();
+      }
+    }
+  }
+
+  // draw nodes (glow points)
+  nodes.forEach(n=>{
+    x.beginPath();
+    x.arc(n.x,n.y,2,0,Math.PI*2);
+    x.fillStyle = 'rgba(255,180,0,0.9)';
+    x.fill();
+  });
+
   requestAnimationFrame(drawBg);
 }
+
 drawBg();
 </script>
-</body>
-</html>
