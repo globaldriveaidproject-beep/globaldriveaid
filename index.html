@@ -13,38 +13,28 @@ body {
   overflow: hidden;
 }
 
-/* BACKGROUND */
+/* 🌍 AI WORLD MAP BACKGROUND */
 .bg {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1920&q=80') no-repeat center center/cover;
+  background: url('https://images.unsplash.com/photo-1526378722484-bd91ca387e72?auto=format&fit=crop&w=1920&q=80') no-repeat center center/cover;
   z-index: 0;
-  filter: brightness(0.4);
-  animation: slowZoom 20s infinite alternate;
+  filter: brightness(0.45);
 }
 
-/* GLOW EFFECT */
-.glow {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle, rgba(0,150,255,0.2), transparent 70%);
-  z-index: 1;
-}
-
-/* OVERLAY */
+/* 🌌 OVERLAY FOR DEPTH */
 .overlay {
   position: fixed;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at center, transparent 20%, black 90%);
+  background: linear-gradient(to right, rgba(0,0,0,0.85), rgba(0,0,0,0.4));
   z-index: 1;
 }
 
-/* LEFT PANEL */
+/* 🔥 LEFT PANEL */
 .left-panel {
   position: absolute;
   left: 60px;
@@ -57,6 +47,7 @@ body {
 .left-panel h1 {
   font-size: 60px;
   margin: 0;
+  text-shadow: 0 0 20px rgba(255,140,0,0.6);
 }
 
 .left-panel span {
@@ -65,14 +56,14 @@ body {
 
 .left-panel p {
   margin-top: 20px;
-  line-height: 1.5;
+  line-height: 1.6;
   opacity: 0.9;
 }
 
-/* BUTTONS */
+/* 🔘 BUTTONS */
 .btn {
   margin-top: 20px;
-  padding: 12px 20px;
+  padding: 12px 22px;
   border: none;
   cursor: pointer;
   margin-right: 10px;
@@ -83,6 +74,7 @@ body {
 .btn-primary {
   background: linear-gradient(45deg, orange, #ff6600);
   color: white;
+  box-shadow: 0 0 10px rgba(255,140,0,0.5);
 }
 
 .btn-secondary {
@@ -91,7 +83,7 @@ body {
   color: white;
 }
 
-/* RIGHT PANEL */
+/* 📊 RIGHT PANEL */
 .right-panel {
   position: absolute;
   right: 40px;
@@ -101,26 +93,43 @@ body {
   z-index: 2;
 }
 
+/* 🧊 CARDS */
 .card {
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.55);
   padding: 15px;
   margin-bottom: 15px;
   border-radius: 10px;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.05);
 }
 
 .card h3 {
   margin: 0 0 10px;
+  font-size: 16px;
 }
 
 .status {
   color: lime;
+  font-weight: bold;
 }
 
-/* ANIMATION */
-@keyframes slowZoom {
-  from { transform: scale(1); }
-  to { transform: scale(1.08); }
+/* ✨ SMALL TEXT */
+.card p {
+  margin: 6px 0;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+/* 🔥 RESPONSIVE */
+@media (max-width: 900px) {
+  .left-panel {
+    left: 20px;
+    max-width: 300px;
+  }
+
+  .right-panel {
+    display: none;
+  }
 }
 </style>
 </head>
@@ -128,10 +137,9 @@ body {
 <body>
 
 <div class="bg"></div>
-<div class="glow"></div>
 <div class="overlay"></div>
 
-<!-- LEFT SIDE -->
+<!-- LEFT -->
 <div class="left-panel">
   <h1>MANKIND <span>GLOBAL</span></h1>
 
@@ -145,7 +153,7 @@ body {
   <button class="btn btn-secondary">Donate</button>
 </div>
 
-<!-- RIGHT SIDE -->
+<!-- RIGHT -->
 <div class="right-panel">
 
   <div class="card">
