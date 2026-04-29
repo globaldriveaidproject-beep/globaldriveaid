@@ -2,49 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mankind Global</title>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
-}
-
-/* BODY */
 body {
-  background: black;
+  margin: 0;
+  font-family: Arial, sans-serif;
   color: white;
-  overflow-x: hidden;
-}
+  overflow: hidden;
 
-/* BACKGROUND IMAGE (FORCE DISPLAY) */
-.bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-
-  /* 🔥 IMPORTANT: CHANGE ONLY IF YOUR FILE NAME IS DIFFERENT */
-  background-image: url('https://www.globaldriveaid.com/map.jpg');
-
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  z-index: -2;
-}
-
-/* DARK OVERLAY */
-.overlay {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.65);
-  z-index: -1;
+  /* 🔥 GUARANTEED BACKGROUND */
+  background: radial-gradient(circle at center, #0a0f1f, #000000 80%);
 }
 
 /* LEFT PANEL */
@@ -58,36 +26,29 @@ body {
 
 .left h1 {
   font-size: 70px;
-  line-height: 1.1;
 }
 
 .left span {
-  color: orange;
+  color: #00f0ff;
 }
 
 .left p {
   margin-top: 20px;
-  opacity: 0.9;
   line-height: 1.6;
 }
 
 /* BUTTONS */
-.buttons {
-  margin-top: 25px;
-}
-
 .btn {
-  padding: 14px 22px;
-  border-radius: 8px;
+  margin-top: 20px;
+  padding: 12px 20px;
+  border-radius: 6px;
   border: none;
   cursor: pointer;
-  margin-right: 12px;
-  font-size: 14px;
 }
 
 .primary {
-  background: linear-gradient(45deg, orange, #ff6600);
-  color: white;
+  background: linear-gradient(45deg,#00f0ff,#00ffcc);
+  color: black;
 }
 
 .secondary {
@@ -102,90 +63,48 @@ body {
   right: 60px;
   top: 50%;
   transform: translateY(-50%);
-  width: 280px;
+  width: 260px;
 }
 
-/* CARDS */
 .card {
-  background: rgba(0,0,0,0.6);
-  padding: 18px;
+  background: rgba(255,255,255,0.05);
+  padding: 15px;
   margin-bottom: 15px;
-  border-radius: 12px;
-  backdrop-filter: blur(12px);
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
 }
 
-.card h3 {
-  margin-bottom: 10px;
-}
-
-/* STATUS */
 .status {
-  color: lime;
-  font-weight: bold;
-}
-
-/* RESPONSIVE */
-@media(max-width: 900px){
-  .left {
-    left: 20px;
-    right: 20px;
-    max-width: 100%;
-  }
-
-  .right {
-    position: static;
-    transform: none;
-    width: 90%;
-    margin: 30px auto;
-  }
+  color: #00ff88;
 }
 </style>
 </head>
 
 <body>
 
-<!-- BACKGROUND -->
-<div class="bg"></div>
-<div class="overlay"></div>
-
-<!-- LEFT SIDE -->
 <div class="left">
-  <h1>MANKIND <span>GLOBAL</span></h1>
+  <h1>NEXPATH <span>AI</span></h1>
 
   <p>
     A global humanitarian intelligence system delivering aid,
-    restoring dignity, and connecting humanity across borders
-    through technology and compassion.
+    restoring dignity, and connecting humanity through AI.
   </p>
 
-  <div class="buttons">
-    <button class="btn primary">Request Aid</button>
-    <button class="btn secondary">Donate</button>
-  </div>
+  <button class="btn primary">Request Aid</button>
+  <button class="btn secondary">Donate</button>
 </div>
 
-<!-- RIGHT SIDE -->
 <div class="right">
-
   <div class="card">
     <h3>System Status</h3>
     <div class="status">● ONLINE</div>
   </div>
 
   <div class="card">
-    <h3>Real-Time Overview</h3>
-    <p>Aid Requests: 24,985</p>
+    <h3>Live Data</h3>
+    <p>Requests: 24,985</p>
     <p>People Helped: 8.7M</p>
-    <p>Missions: 142</p>
   </div>
-
-  <div class="card">
-    <h3>Crisis Hotspots</h3>
-    <p>Sudan - Critical</p>
-    <p>Haiti - High</p>
-    <p>Yemen - High</p>
-  </div>
-
 </div>
 
 </body>
