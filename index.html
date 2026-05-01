@@ -5,92 +5,107 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Donate — Mankind Global</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<!-- Stripe MUST load before any other scripts -->
 <script src="https://js.stripe.com/v3/"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--orange:#FF6B1A;--orange2:#FF8C42;--blue:#00D4FF;--bg:#03080F;--bg2:#060E1A;--border:rgba(0,180,255,0.13);--border-o:rgba(255,107,26,0.28);--text:#D0E4F0;--text2:#5A7A8E;--white:#fff;--green:#00FF88;--critical:#FF2D2D;}
+:root{
+  --orange:#FF6B1A;--orange2:#FF8C42;--blue:#00D4FF;
+  --bg:#03080F;--bg2:#060E1A;
+  --border:rgba(0,180,255,0.13);--border-o:rgba(255,107,26,0.28);
+  --text:#D0E4F0;--text2:#5A7A8E;--white:#fff;
+  --green:#00FF88;--critical:#FF2D2D;
+}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;}
+
+/* BG */
 #world-bg{position:fixed;inset:0;z-index:0;background-image:url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/1280px-Equirectangular_projection_SW.jpg');background-size:cover;background-position:center;opacity:0.10;filter:saturate(0) brightness(1.4) invert(1) sepia(1) saturate(3) hue-rotate(180deg);}
 #world-overlay{position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,rgba(3,8,15,0.88) 0%,rgba(3,8,15,0.75) 50%,rgba(3,8,15,0.88) 100%);}
 .scanlines{position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.03) 3px,rgba(0,0,0,0.03) 4px);}
 
+/* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:56px;background:rgba(3,8,15,0.97);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);}
-.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
-.nav-logo-circle{width:32px;height:32px;border-radius:50%;border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:var(--orange);animation:lp 3s ease-in-out infinite;}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-circle{width:32px;height:32px;border-radius:50%;border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:var(--orange);animation:lp 3s ease-in-out infinite;}
 @keyframes lp{0%,100%{box-shadow:0 0 0 0 rgba(255,107,26,0.4);}50%{box-shadow:0 0 0 6px rgba(255,107,26,0);}}
 .nav-title{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:800;color:var(--white);letter-spacing:2px;}
 .nav-sub{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--blue);letter-spacing:1.5px;}
 .nav-back{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);text-decoration:none;letter-spacing:1px;transition:color .2s;}
 .nav-back:hover{color:var(--orange);}
 
+/* MAIN GRID */
 main{position:relative;z-index:10;min-height:100vh;display:grid;grid-template-columns:1fr 1fr;padding-top:56px;}
 
-/* LEFT PANEL */
+/* LEFT */
 .left{padding:56px 48px;border-right:1px solid var(--border);background:rgba(6,14,26,0.5);display:flex;flex-direction:column;justify-content:center;}
 .sec-tag{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--orange);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
 .sec-tag::before{content:'';width:24px;height:1px;background:var(--orange);}
-.left h1{font-family:'Orbitron',sans-serif;font-size:clamp(28px,3vw,42px);font-weight:900;color:var(--white);line-height:1.1;margin-bottom:14px;}
+.left h1{font-family:'Orbitron',sans-serif;font-size:clamp(26px,3vw,40px);font-weight:900;color:var(--white);line-height:1.1;margin-bottom:14px;}
 .left h1 span{color:var(--orange);}
-.left p{font-size:16px;color:var(--text2);line-height:1.75;margin-bottom:36px;}
-.left p strong{color:var(--text);}
+.left-desc{font-size:16px;color:var(--text2);line-height:1.75;margin-bottom:32px;}
+.left-desc strong{color:var(--text);}
 
-.impact-rows{display:flex;flex-direction:column;gap:10px;margin-bottom:36px;}
-.impact-row{display:flex;align-items:center;gap:16px;padding:14px 16px;border:1px solid var(--border);border-radius:4px;background:rgba(0,0,0,0.2);transition:border-color .2s;cursor:pointer;}
+.impact-rows{display:flex;flex-direction:column;gap:10px;margin-bottom:32px;}
+.impact-row{display:flex;align-items:center;gap:16px;padding:13px 16px;border:1px solid var(--border);border-radius:4px;background:rgba(0,0,0,0.2);transition:border-color .2s;cursor:pointer;}
 .impact-row:hover{border-color:var(--border-o);}
-.ir-amount{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:800;color:var(--orange);min-width:56px;}
-.ir-text strong{display:block;font-size:15px;color:var(--text);margin-bottom:2px;}
-.ir-text span{font-size:13px;color:var(--text2);}
+.ir-amt{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:800;color:var(--orange);min-width:54px;}
+.ir-txt strong{display:block;font-size:15px;color:var(--text);margin-bottom:2px;}
+.ir-txt span{font-size:13px;color:var(--text2);}
 
 .trust{display:flex;flex-direction:column;gap:7px;}
-.trust-item{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:1px;display:flex;align-items:center;gap:8px;}
-.trust-item::before{content:'✓';color:var(--green);}
+.trust-item{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:1px;display:flex;align-items:flex-start;gap:8px;line-height:1.5;}
+.trust-item::before{content:'✓';color:var(--green);flex-shrink:0;}
 
-/* RIGHT PANEL */
-.right{padding:48px 48px;overflow-y:auto;}
+/* RIGHT */
+.right{padding:44px 48px;overflow-y:auto;}
 .form-title{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:800;color:var(--white);letter-spacing:1px;margin-bottom:4px;}
-.form-subtitle{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--blue);letter-spacing:2px;margin-bottom:28px;}
+.form-sub{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--blue);letter-spacing:2px;margin-bottom:26px;}
 
 /* AMOUNTS */
-.amounts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;}
-.ab{padding:14px 8px;border:1px solid var(--border);border-radius:4px;background:rgba(0,0,0,0.3);cursor:pointer;text-align:center;transition:all .2s;font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;color:var(--text2);}
+.amounts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px;}
+.ab{padding:13px 6px;border:1px solid var(--border);border-radius:4px;background:rgba(0,0,0,0.3);cursor:pointer;text-align:center;transition:all .2s;font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;color:var(--text2);}
 .ab:hover{border-color:var(--border-o);color:var(--orange);}
-.ab.sel{border-color:var(--orange);background:rgba(255,107,26,0.1);color:var(--orange);box-shadow:0 0 16px rgba(255,107,26,0.15);}
-.ab small{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text2);display:block;margin-top:2px;letter-spacing:1px;}
-.ab.sel small{color:var(--orange);}
+.ab.sel{border-color:var(--orange);background:rgba(255,107,26,0.10);color:var(--orange);box-shadow:0 0 14px rgba(255,107,26,0.12);}
+.ab small{font-family:'Share Tech Mono',monospace;font-size:8px;display:block;margin-top:3px;letter-spacing:1px;color:inherit;opacity:0.7;}
 
-.custom-wrap{position:relative;margin-bottom:20px;display:none;}
-.custom-prefix{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;color:var(--orange);}
+.custom-wrap{position:relative;margin-bottom:18px;display:none;}
+.custom-pfx{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-family:'Orbitron',sans-serif;font-size:15px;font-weight:700;color:var(--orange);}
 
-/* CAUSE */
-.causes{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:18px;}
-.cause-btn{padding:10px 6px;border:1px solid var(--border);border-radius:3px;background:rgba(0,0,0,0.3);cursor:pointer;text-align:center;transition:all .2s;}
-.cause-btn:hover{border-color:var(--border-o);}
-.cause-btn.sel{border-color:var(--orange);background:rgba(255,107,26,0.08);}
-.cause-emoji{font-size:18px;display:block;margin-bottom:3px;}
-.cause-label{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text2);letter-spacing:.5px;text-transform:uppercase;line-height:1.3;}
-.cause-btn.sel .cause-label{color:var(--orange);}
+/* CAUSES */
+.causes{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px;}
+.cb{padding:10px 6px;border:1px solid var(--border);border-radius:3px;background:rgba(0,0,0,0.3);cursor:pointer;text-align:center;transition:all .2s;}
+.cb:hover{border-color:var(--border-o);}
+.cb.sel{border-color:var(--orange);background:rgba(255,107,26,0.08);}
+.cb-icon{font-size:18px;display:block;margin-bottom:3px;}
+.cb-lbl{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text2);letter-spacing:.5px;text-transform:uppercase;line-height:1.3;}
+.cb.sel .cb-lbl{color:var(--orange);}
 
 /* FIELDS */
-.field{margin-bottom:14px;}
+.field{margin-bottom:13px;}
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 label{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--blue);text-transform:uppercase;display:block;margin-bottom:5px;}
 input,select{width:100%;background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:4px;padding:11px 13px;font-family:'Rajdhani',sans-serif;font-size:15px;color:var(--text);outline:none;transition:border-color .2s;-webkit-appearance:none;}
-input:focus,select:focus{border-color:rgba(0,212,255,0.4);box-shadow:0 0 0 3px rgba(0,212,255,0.06);}
+input:focus{border-color:rgba(0,212,255,0.4);box-shadow:0 0 0 3px rgba(0,212,255,0.05);}
 input::placeholder{color:var(--text2);}
 
-/* STRIPE */
-.stripe-box{background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:4px;padding:13px;margin-bottom:6px;transition:border-color .2s;}
-.stripe-box:focus-within{border-color:rgba(0,212,255,0.4);}
-#card-errors{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--critical);margin-top:6px;margin-bottom:10px;min-height:14px;}
+/* STRIPE ELEMENT */
+.stripe-wrap{background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:4px;padding:13px;margin-bottom:4px;transition:border-color .2s;}
+.stripe-wrap:focus-within{border-color:rgba(0,212,255,0.4);}
+#card-errors{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--critical);margin-top:6px;margin-bottom:8px;min-height:14px;}
 
 /* ANON */
-.anon-row{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.anon-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
 .anon-row input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--orange);flex-shrink:0;}
 .anon-lbl{font-family:'Rajdhani',sans-serif;font-size:14px;color:var(--text2);}
 
 /* TEST NOTICE */
-.test-notice{padding:10px 14px;background:rgba(0,212,255,0.05);border:1px solid var(--border);border-radius:3px;margin-bottom:16px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--blue);letter-spacing:.5px;line-height:1.6;}
+.test-notice{padding:10px 14px;background:rgba(0,212,255,0.04);border:1px solid var(--border);border-radius:3px;margin-bottom:14px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--blue);letter-spacing:.5px;line-height:1.7;}
+
+/* URGENCY */
+.urgency-box{padding:12px 14px;background:rgba(255,107,26,0.06);border:1px solid var(--border-o);border-radius:3px;margin-bottom:14px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:1px;line-height:1.7;}
+.urgency-top{color:var(--orange);margin-bottom:3px;}
+.urgency-impact{color:var(--text2);}
 
 /* BUTTON */
 .donate-btn{width:100%;padding:16px;background:var(--orange);border:none;border-radius:4px;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:var(--white);cursor:pointer;transition:all .25s;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:10px;}
@@ -98,7 +113,7 @@ input::placeholder{color:var(--text2);}
 .donate-btn:disabled{opacity:0.5;cursor:not-allowed;}
 
 /* STATUS */
-.status{padding:16px;border-radius:4px;margin-top:14px;font-family:'Rajdhani',sans-serif;font-size:15px;line-height:1.6;display:none;white-space:pre-line;}
+.status{padding:16px;border-radius:4px;margin-top:14px;font-family:'Rajdhani',sans-serif;font-size:15px;line-height:1.7;display:none;white-space:pre-line;}
 .status.show{display:block;}
 .status.success{background:rgba(0,255,136,0.07);border:1px solid rgba(0,255,136,0.25);color:var(--green);}
 .status.error{background:rgba(255,45,45,0.07);border:1px solid rgba(255,45,45,0.25);color:var(--critical);}
@@ -107,9 +122,10 @@ input::placeholder{color:var(--text2);}
 /* TRACKING */
 .track-box{margin-top:14px;padding:14px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:4px;display:none;}
 .track-box.show{display:block;}
-.track-title{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--blue);letter-spacing:2px;margin-bottom:10px;}
-.track-step{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:1px;padding:4px 0;display:flex;align-items:center;gap:8px;transition:color .4s;}
-.track-step::before{content:'○';transition:content .4s;}
+.track-title{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--blue);letter-spacing:1.5px;margin-bottom:10px;}
+.track-title span{color:var(--text2);font-size:8px;}
+.track-step{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:1px;padding:4px 0;display:flex;align-items:center;gap:8px;transition:color .5s;}
+.track-step::before{content:'○';}
 .track-step.done{color:var(--green);}
 .track-step.done::before{content:'✓';}
 
@@ -125,9 +141,10 @@ input::placeholder{color:var(--text2);}
 <div id="world-overlay"></div>
 <div class="scanlines"></div>
 
+<!-- NAV -->
 <nav>
-  <a class="nav-logo" href="index.html">
-    <div class="nav-logo-circle">MG</div>
+  <a class="nav-brand" href="index.html">
+    <div class="nav-circle">MG</div>
     <div>
       <div class="nav-title">MANKIND GLOBAL</div>
       <div class="nav-sub">POWERED BY NEXPATH AI</div>
@@ -138,49 +155,52 @@ input::placeholder{color:var(--text2);}
 
 <main>
 
-  <!-- LEFT -->
+  <!-- LEFT PANEL -->
   <div class="left">
     <div class="sec-tag">Your Impact</div>
     <h1>Every Dollar<br><span>Tracked to Impact.</span></h1>
-    <p>NexPath AI ensures <strong>every contribution is visible</strong> from the moment you give to the moment it reaches someone in need. No black boxes. Full transparency.</p>
+    <p class="left-desc">
+      Mankind Global uses NexPath AI to ensure <strong>every contribution is visible</strong> — from the moment you give to the moment it reaches someone in need.<br><br>
+      No black boxes. No uncertainty. Full transparency.
+    </p>
 
     <div class="impact-rows">
       <div class="impact-row" onclick="selectAmt(10)">
-        <span class="ir-amount">$10</span>
-        <div class="ir-text"><strong>Emergency Food Pack</strong><span>Feeds a family for 3 days</span></div>
+        <span class="ir-amt">$10</span>
+        <div class="ir-txt"><strong>Emergency Food Pack</strong><span>Feeds a family for 3 days in a high-need region</span></div>
       </div>
       <div class="impact-row" onclick="selectAmt(25)">
-        <span class="ir-amount">$25</span>
-        <div class="ir-text"><strong>Medical Aid Kit</strong><span>Basic medical supplies for a family in crisis</span></div>
+        <span class="ir-amt">$25</span>
+        <div class="ir-txt"><strong>Medical Aid Kit</strong><span>Basic medical supplies for a family in a crisis zone</span></div>
       </div>
       <div class="impact-row" onclick="selectAmt(50)">
-        <span class="ir-amount">$50</span>
-        <div class="ir-text"><strong>Shelter Support</strong><span>Emergency shelter materials for a displaced family</span></div>
+        <span class="ir-amt">$50</span>
+        <div class="ir-txt"><strong>Shelter Support</strong><span>Emergency shelter materials for a displaced family</span></div>
       </div>
       <div class="impact-row" onclick="selectAmt(100)">
-        <span class="ir-amount">$100</span>
-        <div class="ir-text"><strong>Full Aid Package</strong><span>Food, medical and shelter support for one month</span></div>
+        <span class="ir-amt">$100</span>
+        <div class="ir-txt"><strong>Full Aid Package</strong><span>Food, medical and shelter support for one month</span></div>
       </div>
     </div>
 
     <div class="trust">
-      <div class="trust-item">Every donation tracked in real time via NexPath AI</div>
+      <div class="trust-item">Every donation tracked through our platform — full transparency from payment to impact</div>
       <div class="trust-item">You receive a verified impact report after delivery</div>
       <div class="trust-item">Secure payment processing via Stripe</div>
-      <div class="trust-item">100% of funds go directly to aid operations</div>
+      <div class="trust-item">Maximum allocation directed to aid operations, with full transparency on all costs</div>
       <div class="trust-item">Anonymous donations available</div>
     </div>
   </div>
 
-  <!-- RIGHT -->
+  <!-- RIGHT PANEL -->
   <div class="right">
     <div class="form-title">Make a Donation</div>
-    <div class="form-subtitle">◆ SECURE · TRACKED · TRANSPARENT</div>
+    <div class="form-sub">◆ SECURE · TRACKED · TRANSPARENT</div>
 
     <!-- AMOUNT -->
     <div class="field"><label>Choose Amount (USD)</label></div>
     <div class="amounts" id="amounts">
-      <div class="ab sel" data-v="10" onclick="selectAmt(10)">$10<small>Food Aid</small></div>
+      <div class="ab" data-v="10" onclick="selectAmt(10)">$10<small>Food Aid</small></div>
       <div class="ab" data-v="25" onclick="selectAmt(25)">$25<small>Medical Kit</small></div>
       <div class="ab" data-v="50" onclick="selectAmt(50)">$50<small>Shelter</small></div>
       <div class="ab" data-v="100" onclick="selectAmt(100)">$100<small>Full Package</small></div>
@@ -190,21 +210,23 @@ input::placeholder{color:var(--text2);}
     <div class="custom-wrap field" id="custom-wrap">
       <label>Custom Amount</label>
       <div style="position:relative;">
-        <span class="custom-prefix">$</span>
+        <span class="custom-pfx">$</span>
         <input type="number" id="custom-input" placeholder="Enter amount" min="1" style="padding-left:30px;" oninput="onCustom()"/>
       </div>
     </div>
 
     <!-- CAUSE -->
-    <div class="field"><label>Direct Your Donation To</label>
-    <div class="causes" id="causes">
-      <div class="cause-btn sel" data-v="general" onclick="selCause(this)"><span class="cause-emoji">🌍</span><div class="cause-label">Where Needed Most</div></div>
-      <div class="cause-btn" data-v="food" onclick="selCause(this)"><span class="cause-emoji">🍞</span><div class="cause-label">Food Security</div></div>
-      <div class="cause-btn" data-v="medical" onclick="selCause(this)"><span class="cause-emoji">🏥</span><div class="cause-label">Medical Aid</div></div>
-      <div class="cause-btn" data-v="shelter" onclick="selCause(this)"><span class="cause-emoji">🏠</span><div class="cause-label">Shelter</div></div>
-      <div class="cause-btn" data-v="women" onclick="selCause(this)"><span class="cause-emoji">⚖️</span><div class="cause-label">Women in Detention</div></div>
-      <div class="cause-btn" data-v="emergency" onclick="selCause(this)"><span class="cause-emoji">🚨</span><div class="cause-label">Emergency Response</div></div>
-    </div></div>
+    <div class="field">
+      <label>Direct Your Donation To</label>
+      <div class="causes">
+        <div class="cb sel" data-v="general" onclick="selCause(this)"><span class="cb-icon">🌍</span><div class="cb-lbl">Where Needed Most</div></div>
+        <div class="cb" data-v="food" onclick="selCause(this)"><span class="cb-icon">🍞</span><div class="cb-lbl">Food Security</div></div>
+        <div class="cb" data-v="medical" onclick="selCause(this)"><span class="cb-icon">🏥</span><div class="cb-lbl">Medical Aid</div></div>
+        <div class="cb" data-v="shelter" onclick="selCause(this)"><span class="cb-icon">🏠</span><div class="cb-lbl">Shelter</div></div>
+        <div class="cb" data-v="women" onclick="selCause(this)"><span class="cb-icon">⚖️</span><div class="cb-lbl">Women in Detention</div></div>
+        <div class="cb" data-v="emergency" onclick="selCause(this)"><span class="cb-icon">🚨</span><div class="cb-lbl">Emergency Response</div></div>
+      </div>
+    </div>
 
     <!-- DONOR INFO -->
     <div class="field">
@@ -227,15 +249,21 @@ input::placeholder{color:var(--text2);}
     <!-- STRIPE CARD -->
     <div class="field">
       <label>Card Details</label>
-      <div class="stripe-box"><div id="card-element"></div></div>
+      <div class="stripe-wrap" id="stripe-wrap"><div id="card-element"></div></div>
       <div id="card-errors"></div>
     </div>
 
-    <!-- TEST MODE NOTICE -->
+    <!-- TEST NOTICE -->
     <div class="test-notice">
-      ◆ SANDBOX MODE — Use test card:<br>
-      Card: 4242 4242 4242 4242<br>
+      ◆ SANDBOX MODE — For testing use:<br>
+      Card: <strong>4242 4242 4242 4242</strong><br>
       Expiry: Any future date (e.g. 12/26) · CVC: Any 3 digits · ZIP: Any 5 digits
+    </div>
+
+    <!-- URGENCY BOX -->
+    <div class="urgency-box">
+      <div class="urgency-top">◆ Real requests are waiting to be matched right now.</div>
+      <div class="urgency-impact" id="urgency-msg">Your $10 feeds a family for 3 days — aid dispatched within hours.</div>
     </div>
 
     <!-- DONATE BUTTON -->
@@ -243,11 +271,12 @@ input::placeholder{color:var(--text2);}
       ❤️ DONATE NOW — TRACK EVERY DOLLAR
     </button>
 
+    <!-- STATUS -->
     <div class="status" id="status"></div>
 
     <!-- TRACKING -->
     <div class="track-box" id="track-box">
-      <div class="track-title">◆ YOUR DONATION — LIVE TRACKING</div>
+      <div class="track-title">◆ YOUR DONATION — LIVE TRACKING <span>(Demo mode — live tracking activated after deployment)</span></div>
       <div class="track-step done" id="t1">Payment received and verified</div>
       <div class="track-step" id="t2">NexPath AI allocating to verified need</div>
       <div class="track-step" id="t3">Aid matched and dispatched to recipient</div>
@@ -259,140 +288,205 @@ input::placeholder{color:var(--text2);}
 </main>
 
 <script>
-// ── SUPABASE ──
-const{createClient}=supabase;
-const sb=createClient(
-  'https://ehlbtosecxhneixkmcab.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVobGJ0b3NlY3hobmVpeGttY2FiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NDE2MTEsImV4cCI6MjA5MzAxNzYxMX0.IbLP1mXF-U-UtcGtYTQqqjZFDFwGbkF8HL974J_3iWo'
-);
+// Wait for everything to load before initialising Stripe
+window.addEventListener('load', function() {
 
-// ── STRIPE ──
-const stripe=Stripe('pk_test_51TEr1iKDqs5Uxjb5HuqEOvQ4eyLtSQas6yHlHgKlIMMz5jm2GfDKloF1vTpq4ye4KoTd3AND6KTkRt4Fea6e5xsu00cF6mpw0D');
-const elements=stripe.elements({
-  appearance:{
-    theme:'night',
-    variables:{colorPrimary:'#FF6B1A',colorBackground:'#000000',colorText:'#D0E4F0',colorDanger:'#FF2D2D',fontFamily:'Rajdhani, sans-serif',borderRadius:'4px'}
-  }
-});
-const card=elements.create('card',{
-  style:{base:{color:'#D0E4F0',fontFamily:'Rajdhani, sans-serif',fontSize:'15px','::placeholder':{color:'#5A7A8E'}},invalid:{color:'#FF2D2D'}}
-});
-card.mount('#card-element');
-card.on('change',e=>{ document.getElementById('card-errors').textContent=e.error?e.error.message:''; });
+  // ── SUPABASE ──
+  const { createClient } = supabase;
+  const sb = createClient(
+    'https://ehlbtosecxhneixkmcab.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVobGJ0b3NlY3hobmVpeGttY2FiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NDE2MTEsImV4cCI6MjA5MzAxNzYxMX0.IbLP1mXF-U-UtcGtYTQqqjZFDFwGbkF8HL974J_3iWo'
+  );
 
-// ── STATE ──
-let amount=10, cause='general';
-selectAmt(10);
-
-function selectAmt(v){
-  amount=v;
-  document.querySelectorAll('.ab').forEach(b=>b.classList.toggle('sel',b.dataset.v==v));
-  document.getElementById('custom-wrap').style.display='none';
-}
-function selectCustom(){
-  document.querySelectorAll('.ab').forEach(b=>b.classList.remove('sel'));
-  document.querySelector('[data-v="custom"]').classList.add('sel');
-  document.getElementById('custom-wrap').style.display='block';
-  document.getElementById('custom-input').focus();
-}
-function onCustom(){ amount=parseFloat(document.getElementById('custom-input').value)||0; }
-function selCause(el){
-  document.querySelectorAll('.cause-btn').forEach(b=>b.classList.remove('sel'));
-  el.classList.add('sel'); cause=el.dataset.v;
-}
-
-// Click impact rows to select amount
-document.querySelectorAll('.impact-row').forEach(row=>{
-  row.addEventListener('click',()=>{
-    const v=parseInt(row.querySelector('.ir-amount').textContent.replace('$',''));
-    selectAmt(v);
-  });
-});
-
-// ── SUBMIT ──
-async function submitDonation(){
-  const btn=document.getElementById('donate-btn');
-  const name=document.getElementById('dname').value.trim();
-  const email=document.getElementById('demail').value.trim();
-  const msg=document.getElementById('dmsg').value.trim();
-  const anon=document.getElementById('anon').checked;
-
-  if(!name){ showStatus('error','Please enter your name.'); return; }
-  if(!email||!email.includes('@')){ showStatus('error','Please enter a valid email address.'); return; }
-  if(!amount||amount<1){ showStatus('error','Please select or enter a donation amount.'); return; }
-
-  btn.disabled=true;
-  btn.innerHTML='⏳ PROCESSING PAYMENT...';
-  showStatus('loading','🔒 Securing payment via Stripe...');
-
-  try{
-    // Tokenize card
-    const{paymentMethod,error:pmErr}=await stripe.createPaymentMethod({
-      type:'card',card,billing_details:{name,email}
-    });
-
-    if(pmErr){
-      showStatus('error',pmErr.message);
-      btn.disabled=false;
-      btn.innerHTML='❤️ DONATE NOW — TRACK EVERY DOLLAR';
-      return;
+  // ── STRIPE ──
+  const stripe = Stripe('pk_test_51TEr1iKDqs5Uxjb5HuqEOvQ4eyLtSQas6yHlHgKlIMMz5jm2GfDKloF1vTpq4ye4KoTd3AND6KTkRt4Fea6e5xsu00cF6mpw0D');
+  const elements = stripe.elements({
+    appearance: {
+      theme: 'night',
+      variables: {
+        colorPrimary: '#FF6B1A',
+        colorBackground: '#000000',
+        colorText: '#D0E4F0',
+        colorDanger: '#FF2D2D',
+        fontFamily: 'Rajdhani, sans-serif',
+        borderRadius: '4px'
+      }
     }
+  });
 
-    // Save to Supabase
-    const{data:rec,error:dbErr}=await sb.from('donations').insert([{
-      donor_name:anon?'Anonymous':name,
-      donor_email:email,
-      amount_usd:amount,
-      currency:'USD',
-      status:'pending',
-      message:msg||null,
-      is_anonymous:anon,
-    }]).select();
+  const card = elements.create('card', {
+    style: {
+      base: {
+        color: '#D0E4F0',
+        fontFamily: 'Rajdhani, sans-serif',
+        fontSize: '15px',
+        '::placeholder': { color: '#5A7A8E' }
+      },
+      invalid: { color: '#FF2D2D' }
+    }
+  });
 
-    if(dbErr) console.error('DB error:',dbErr);
+  card.mount('#card-element');
+  card.on('change', e => {
+    document.getElementById('card-errors').textContent = e.error ? e.error.message : '';
+  });
 
-    showStatus('loading','🤖 NexPath AI verifying and allocating your donation...');
+  // ── STATE ──
+  let amount = 10;
+  let cause  = 'general';
 
-    // Sandbox: simulate payment confirmation after 2 seconds
-    setTimeout(async()=>{
-      if(rec&&rec[0]){
-        await sb.from('donations').update({status:'completed'}).eq('id',rec[0].id);
+  // Urgency messages per amount
+  const urgencyMsgs = {
+    10:  'Your $10 feeds a family for 3 days — aid dispatched within hours.',
+    25:  'Your $25 delivers a medical aid kit to a family in crisis.',
+    50:  'Your $50 provides emergency shelter for a displaced family.',
+    100: 'Your $100 covers food, medical and shelter for an entire month.',
+    250: 'Your $250 funds a full aid mission for multiple families.',
+  };
+
+  const causeLabels = {
+    general:   'the highest-need operations',
+    food:      'food security programs',
+    medical:   'medical aid',
+    shelter:   'shelter programs',
+    women:     'the women in detention program',
+    emergency: 'emergency response'
+  };
+
+  function updateUrgency() {
+    const el = document.getElementById('urgency-msg');
+    if (!el) return;
+    el.textContent = urgencyMsgs[amount] || `Your $${parseFloat(amount).toFixed(0)} can reach someone in need within hours.`;
+  }
+
+  // Expose to inline onclick handlers
+  window.selectAmt = function(v) {
+    amount = v;
+    document.querySelectorAll('.ab').forEach(b => b.classList.toggle('sel', b.dataset.v == v));
+    document.getElementById('custom-wrap').style.display = 'none';
+    updateUrgency();
+  };
+
+  window.selectCustom = function() {
+    document.querySelectorAll('.ab').forEach(b => b.classList.remove('sel'));
+    document.querySelector('[data-v="custom"]').classList.add('sel');
+    document.getElementById('custom-wrap').style.display = 'block';
+    document.getElementById('custom-input').focus();
+  };
+
+  window.onCustom = function() {
+    amount = parseFloat(document.getElementById('custom-input').value) || 0;
+    updateUrgency();
+  };
+
+  window.selCause = function(el) {
+    document.querySelectorAll('.cb').forEach(b => b.classList.remove('sel'));
+    el.classList.add('sel');
+    cause = el.dataset.v;
+  };
+
+  // Click impact rows = select that amount
+  document.querySelectorAll('.impact-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const v = parseInt(row.querySelector('.ir-amt').textContent.replace('$',''));
+      window.selectAmt(v);
+    });
+  });
+
+  // Set default
+  window.selectAmt(10);
+
+  // ── SUBMIT ──
+  window.submitDonation = async function() {
+    const btn   = document.getElementById('donate-btn');
+    const name  = document.getElementById('dname').value.trim();
+    const email = document.getElementById('demail').value.trim();
+    const msg   = document.getElementById('dmsg').value.trim();
+    const anon  = document.getElementById('anon').checked;
+
+    // Validate
+    if (!name)                   { showStatus('error', 'Please enter your name.'); return; }
+    if (!email || !email.includes('@')) { showStatus('error', 'Please enter a valid email address.'); return; }
+    if (!amount || amount < 1)   { showStatus('error', 'Please select or enter a donation amount.'); return; }
+
+    btn.disabled = true;
+    btn.innerHTML = '⏳ PROCESSING PAYMENT...';
+    showStatus('loading', '🔒 Securing payment via Stripe...');
+
+    try {
+      // Tokenise card with Stripe
+      const { paymentMethod, error: pmErr } = await stripe.createPaymentMethod({
+        type: 'card',
+        card: card,
+        billing_details: { name, email }
+      });
+
+      if (pmErr) {
+        showStatus('error', pmErr.message);
+        btn.disabled = false;
+        btn.innerHTML = '❤️ DONATE NOW — TRACK EVERY DOLLAR';
+        return;
       }
 
-      const ref=rec&&rec[0]?rec[0].id.substring(0,8).toUpperCase():'CONFIRMED';
-      const causeLabels={general:'the highest-need operations',food:'food security',medical:'medical aid',shelter:'shelter programs',women:'the women in detention program',emergency:'emergency response'};
+      // Save donation to Supabase as pending
+      const { data: rec, error: dbErr } = await sb.from('donations').insert([{
+        donor_name:  anon ? 'Anonymous' : name,
+        donor_email: email,
+        amount_usd:  amount,
+        currency:    'USD',
+        status:      'pending',
+        message:     msg || null,
+        is_anonymous: anon,
+      }]).select();
 
-      showStatus('success',
+      if (dbErr) console.error('Supabase error:', dbErr);
+
+      showStatus('loading', '🤖 NexPath AI verifying and allocating your donation...');
+
+      // Sandbox: simulate successful payment after 2 seconds
+      setTimeout(async () => {
+
+        // Update status to completed in database
+        if (rec && rec[0]) {
+          await sb.from('donations').update({ status: 'completed' }).eq('id', rec[0].id);
+        }
+
+        const ref = rec && rec[0] ? rec[0].id.substring(0, 8).toUpperCase() : 'CONFIRMED';
+
+        showStatus('success',
 `✅ Donation of $${parseFloat(amount).toFixed(2)} confirmed!
 
-Thank you${anon?'':' '+name}. Your contribution has been received and NexPath AI is allocating it to ${causeLabels[cause]||'operations'}.
+Thank you${anon ? '' : ' ' + name}. Your contribution has been received and NexPath AI is allocating it to ${causeLabels[cause] || 'operations'}.
 
 A verified impact report will be sent to ${email} when your donation reaches its recipient.
 
-Reference: ${ref}`);
+Reference ID: ${ref}`
+        );
 
-      // Show live tracking steps
-      document.getElementById('track-box').classList.add('show');
-      setTimeout(()=>document.getElementById('t2').classList.add('done'),1500);
-      setTimeout(()=>document.getElementById('t3').classList.add('done'),3000);
-      setTimeout(()=>document.getElementById('t4').classList.add('done'),5000);
+        // Animate tracking steps
+        document.getElementById('track-box').classList.add('show');
+        setTimeout(() => document.getElementById('t2').classList.add('done'), 1500);
+        setTimeout(() => document.getElementById('t3').classList.add('done'), 3000);
+        setTimeout(() => document.getElementById('t4').classList.add('done'), 5000);
 
-      btn.innerHTML='✅ DONATION CONFIRMED — THANK YOU';
+        btn.innerHTML = '✅ DONATION CONFIRMED — THANK YOU';
 
-    },2000);
+      }, 2000);
 
-  }catch(err){
-    showStatus('error','Something went wrong: '+err.message);
-    btn.disabled=false;
-    btn.innerHTML='❤️ DONATE NOW — TRACK EVERY DOLLAR';
+    } catch (err) {
+      showStatus('error', 'Something went wrong: ' + err.message);
+      btn.disabled = false;
+      btn.innerHTML = '❤️ DONATE NOW — TRACK EVERY DOLLAR';
+    }
+  };
+
+  function showStatus(type, msg) {
+    const el = document.getElementById('status');
+    el.className = 'status show ' + type;
+    el.textContent = msg;
   }
-}
 
-function showStatus(type,msg){
-  const el=document.getElementById('status');
-  el.className='status show '+type;
-  el.textContent=msg;
-}
+}); // end window.load
 </script>
 </body>
 </html>
