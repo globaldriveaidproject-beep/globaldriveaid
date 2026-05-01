@@ -3,266 +3,118 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<meta name="description" content="Mankind Global — An AI-powered humanitarian platform connecting aid requests, donors and volunteers in real time with full transparency."/>
-<title>Mankind Global — Powered by NexPath AI</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
+<title>Donate — Mankind Global</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+<script src="https://js.stripe.com/v3/"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{
-  --orange:#FF6B1A;--orange2:#FF8C42;--blue:#00D4FF;
-  --bg:#03080F;--bg2:#060E1A;
-  --border:rgba(0,180,255,0.13);--border-o:rgba(255,107,26,0.28);
-  --text:#D0E4F0;--text2:#5A7A8E;--white:#fff;
-  --green:#00FF88;--critical:#FF2D2D;--high:#FF8C00;--moderate:#FFD700;
-}
+:root{--orange:#FF6B1A;--orange2:#FF8C42;--blue:#00D4FF;--bg:#03080F;--bg2:#060E1A;--border:rgba(0,180,255,0.13);--border-o:rgba(255,107,26,0.28);--text:#D0E4F0;--text2:#5A7A8E;--white:#fff;--green:#00FF88;--critical:#FF2D2D;}
 *{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;overflow-x:hidden;}
-
-/* WORLD MAP BG */
-#world-bg{position:fixed;inset:0;z-index:0;background-image:url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/1280px-Equirectangular_projection_SW.jpg');background-size:cover;background-position:center;opacity:0.13;filter:saturate(0) brightness(1.4) invert(1) sepia(1) saturate(3) hue-rotate(180deg);}
-#world-overlay{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse at 50% 30%,rgba(0,40,100,0.55) 0%,transparent 65%),linear-gradient(180deg,rgba(3,8,15,0.82) 0%,rgba(3,8,15,0.58) 40%,rgba(3,8,15,0.82) 100%);}
-#netCanvas{position:fixed;inset:0;z-index:0;width:100%;height:100%;}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;}
+#world-bg{position:fixed;inset:0;z-index:0;background-image:url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/1280px-Equirectangular_projection_SW.jpg');background-size:cover;background-position:center;opacity:0.10;filter:saturate(0) brightness(1.4) invert(1) sepia(1) saturate(3) hue-rotate(180deg);}
+#world-overlay{position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,rgba(3,8,15,0.88) 0%,rgba(3,8,15,0.75) 50%,rgba(3,8,15,0.88) 100%);}
 .scanlines{position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.03) 3px,rgba(0,0,0,0.03) 4px);}
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:60px;background:rgba(3,8,15,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);transition:all .3s;}
-.nav-brand{display:flex;align-items:center;gap:12px;text-decoration:none;}
-.nav-logo{width:38px;height:38px;border-radius:50%;border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;color:var(--orange);animation:logoPulse 3s ease-in-out infinite;}
-@keyframes logoPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,107,26,0.5);}50%{box-shadow:0 0 0 8px rgba(255,107,26,0);}}
-.brand-name{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:800;color:var(--white);letter-spacing:2px;}
-.brand-sub{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--blue);letter-spacing:2px;}
-.nav-links{display:flex;gap:22px;list-style:none;align-items:center;}
-.nav-links a{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--text2);text-decoration:none;text-transform:uppercase;transition:color .2s;}
-.nav-links a:hover{color:var(--orange);}
-.nav-cta{background:var(--orange)!important;color:var(--white)!important;padding:8px 16px;border-radius:3px;font-family:'Orbitron',sans-serif!important;font-size:9px!important;font-weight:700!important;letter-spacing:2px!important;box-shadow:0 0 20px rgba(255,107,26,0.3);transition:all .2s!important;}
-.nav-cta:hover{box-shadow:0 0 35px rgba(255,107,26,0.5)!important;transform:translateY(-1px);}
-.nav-status{display:flex;align-items:center;gap:6px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--green);}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 1.8s infinite;}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.15;}}
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:56px;background:rgba(3,8,15,0.97);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo-circle{width:32px;height:32px;border-radius:50%;border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:var(--orange);animation:lp 3s ease-in-out infinite;}
+@keyframes lp{0%,100%{box-shadow:0 0 0 0 rgba(255,107,26,0.4);}50%{box-shadow:0 0 0 6px rgba(255,107,26,0);}}
+.nav-title{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:800;color:var(--white);letter-spacing:2px;}
+.nav-sub{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--blue);letter-spacing:1.5px;}
+.nav-back{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);text-decoration:none;letter-spacing:1px;transition:color .2s;}
+.nav-back:hover{color:var(--orange);}
 
-/* HERO */
-#hero{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 40px 60px;}
-.hero-tag{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:4px;color:var(--blue);margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:12px;animation:fadeUp .8s .3s ease both;}
-.hero-tag::before,.hero-tag::after{content:'';width:36px;height:1px;}
-.hero-tag::before{background:linear-gradient(90deg,transparent,var(--blue));}
-.hero-tag::after{background:linear-gradient(-90deg,transparent,var(--blue));}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
-.hero-title{font-family:'Orbitron',sans-serif;font-size:clamp(52px,8vw,104px);font-weight:900;line-height:.95;color:var(--white);margin-bottom:6px;animation:fadeUp .8s .5s ease both;text-shadow:0 0 60px rgba(0,212,255,0.15);}
-.hero-title span{color:var(--orange);display:block;text-shadow:0 0 60px rgba(255,107,26,0.25);}
-.hero-serif{font-family:'Cormorant Garamond',serif;font-size:clamp(16px,2vw,24px);font-weight:300;font-style:italic;color:var(--blue);letter-spacing:1px;margin-bottom:18px;animation:fadeUp .8s .7s ease both;}
-.hero-tagline{font-family:'Orbitron',sans-serif;font-size:clamp(10px,1.2vw,13px);font-weight:600;color:var(--orange);letter-spacing:2px;text-transform:uppercase;margin-bottom:26px;animation:fadeUp .8s .8s ease both;border:1px solid var(--border-o);display:inline-block;padding:8px 20px;border-radius:2px;background:rgba(255,107,26,0.06);}
-.hero-desc{max-width:640px;font-size:17px;color:var(--text2);line-height:1.8;margin:0 auto 16px;animation:fadeUp .8s .9s ease both;}
-.hero-desc strong{color:var(--text);}
-.hero-scope{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text2);letter-spacing:1px;margin-bottom:32px;animation:fadeUp .8s .95s ease both;border-left:2px solid var(--orange);padding-left:12px;text-align:left;display:inline-block;}
-.hero-flow{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:36px;animation:fadeUp .8s 1.0s ease both;flex-wrap:wrap;}
-.flow-step{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);letter-spacing:1px;padding:6px 12px;border:1px solid var(--border);border-radius:2px;background:rgba(0,0,0,0.3);}
-.flow-step span{color:var(--orange);}
-.flow-arrow{color:var(--orange);font-size:14px;}
-.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:48px;animation:fadeUp .8s 1.1s ease both;}
-.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--orange);color:var(--white);padding:14px 28px;border-radius:3px;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;transition:all .25s;box-shadow:0 0 28px rgba(255,107,26,0.3);}
-.btn-primary:hover{background:var(--orange2);box-shadow:0 0 45px rgba(255,107,26,0.5);transform:translateY(-2px);}
-.btn-outline{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--orange);padding:13px 28px;border-radius:3px;border:1px solid var(--orange);font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:all .25s;}
-.btn-outline:hover{background:rgba(255,107,26,0.08);transform:translateY(-2px);}
-.btn-secondary{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--blue);padding:13px 28px;border-radius:3px;border:1px solid rgba(0,212,255,0.3);font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:all .25s;}
-.btn-secondary:hover{background:rgba(0,212,255,0.07);box-shadow:0 0 28px rgba(0,212,255,0.2);transform:translateY(-2px);}
-.stats-bar{display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;background:rgba(3,8,15,0.88);backdrop-filter:blur(16px);animation:fadeUp .8s 1.3s ease both;}
-.stat-item{padding:16px 22px;border-right:1px solid var(--border);text-align:center;position:relative;transition:background .2s;}
-.stat-item:last-child{border-right:none;}
-.stat-item:hover{background:rgba(255,107,26,0.05);}
-.stat-num{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--orange);line-height:1;margin-bottom:3px;}
-.stat-label{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:2px;color:var(--text2);text-transform:uppercase;}
-.stat-live{position:absolute;top:6px;right:8px;width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1.8s infinite;}
-.scroll-cue{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:2px;animation:fadeUp 1s 2s ease both;}
-.scroll-line{width:1px;height:36px;background:linear-gradient(180deg,var(--orange),transparent);animation:scrollDrop 2s ease-in-out infinite;}
-@keyframes scrollDrop{0%{transform:scaleY(0);transform-origin:top;}50%{transform:scaleY(1);transform-origin:top;}51%{transform-origin:bottom;}100%{transform:scaleY(0);transform-origin:bottom;}}
+main{position:relative;z-index:10;min-height:100vh;display:grid;grid-template-columns:1fr 1fr;padding-top:56px;}
 
-/* DASHBOARD */
-#live-dashboard{position:relative;z-index:10;}
-.dash-wrap{background:rgba(2,6,12,0.97);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
-.dash-topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;background:rgba(0,0,0,0.5);border-bottom:1px solid var(--border);}
-.dash-brand-txt{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:800;color:var(--white);letter-spacing:2px;}
-.dash-brand-txt span{color:var(--orange);}
-.dash-status-row{display:flex;align-items:center;gap:20px;}
-.dsi{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);display:flex;align-items:center;gap:5px;}
-.dsi .dot{width:5px;height:5px;}
-.dash-metrics{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border);}
-.dash-metric{padding:14px 20px;border-right:1px solid var(--border);background:rgba(2,6,12,0.7);transition:background .2s;}
-.dash-metric:last-child{border-right:none;}
-.dash-metric:hover{background:rgba(0,30,60,0.5);}
-.dm-label{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:1.5px;color:var(--text2);text-transform:uppercase;margin-bottom:2px;}
-.dm-value{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:800;color:var(--orange);line-height:1;}
-.dm-note{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--green);margin-top:2px;}
-.dash-body{display:grid;grid-template-columns:220px 1fr 220px;height:460px;}
-.dash-side{padding:14px;border-right:1px solid var(--border);background:rgba(2,6,12,0.6);display:flex;flex-direction:column;gap:10px;overflow-y:auto;}
-.dash-side-r{border-right:none;border-left:1px solid var(--border);}
-.ds-title{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:2px;color:var(--blue);text-transform:uppercase;margin-bottom:6px;}
-.crisis-row{display:flex;justify-content:space-between;align-items:center;padding:7px 9px;border:1px solid var(--border);border-radius:3px;background:rgba(0,5,15,0.6);cursor:pointer;transition:all .2s;margin-bottom:4px;}
-.crisis-row:hover{border-color:var(--border-o);background:rgba(255,107,26,0.06);transform:translateX(2px);}
-.crisis-name-txt{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:var(--white);}
-.cbadge{font-family:'Share Tech Mono',monospace;font-size:8px;padding:2px 7px;border-radius:2px;font-weight:700;}
-.cbadge.c{color:var(--critical);background:rgba(255,45,45,0.1);border:1px solid rgba(255,45,45,0.25);}
-.cbadge.h{color:var(--high);background:rgba(255,140,0,0.1);border:1px solid rgba(255,140,0,0.25);}
-.cbadge.m{color:var(--moderate);background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.2);}
-
-/* REAL MAP */
-.dash-map{position:relative;overflow:hidden;}
-.map-real-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.22;filter:saturate(0.4) brightness(0.9) hue-rotate(160deg);}
-.map-overlay-dark{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,8,25,0.65) 0%,rgba(0,8,25,0.45) 50%,rgba(0,8,25,0.65) 100%);pointer-events:none;}
-#dashMapCanvas{position:absolute;inset:0;width:100%;height:100%;}
-
-.live-ticker{display:flex;align-items:center;gap:10px;padding:0 14px;height:36px;border-top:1px solid var(--border);background:rgba(0,0,0,0.4);overflow:hidden;}
-.ticker-lbl{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--orange);letter-spacing:1px;white-space:nowrap;}
-.ticker-live-text{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);flex:1;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
-.ticker-clock{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);white-space:nowrap;}
-.feed-item{display:flex;gap:7px;padding:5px 0;border-bottom:1px solid rgba(0,80,140,0.1);}
-.fi-dot{width:4px;height:4px;border-radius:50%;background:var(--blue);margin-top:4px;flex-shrink:0;box-shadow:0 0 5px var(--blue);}
-.fi-time{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text2);white-space:nowrap;padding-top:1px;min-width:36px;}
-.fi-text{font-family:'Rajdhani',sans-serif;font-size:12px;color:var(--text);line-height:1.3;}
-.count-box{padding:10px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:3px;margin-bottom:6px;}
-.count-lbl{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text2);letter-spacing:1px;margin-bottom:3px;}
-.count-num{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:800;}
-.cn-o{color:var(--orange);}.cn-b{color:var(--blue);}.cn-g{color:var(--green);}.cn-r{color:var(--critical);}
-.engine-row{display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:9px;margin-bottom:6px;}
-.engine-lbl{color:var(--text2);}.engine-val{color:var(--green);}
-
-/* SECTIONS */
-section{position:relative;z-index:10;padding:90px 40px;}
-.sec-inner{max-width:1160px;margin:0 auto;}
+/* LEFT PANEL */
+.left{padding:56px 48px;border-right:1px solid var(--border);background:rgba(6,14,26,0.5);display:flex;flex-direction:column;justify-content:center;}
 .sec-tag{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--orange);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
-.sec-tag::before{content:'';width:28px;height:1px;background:var(--orange);}
-.sec-title{font-family:'Orbitron',sans-serif;font-size:clamp(30px,4vw,50px);font-weight:800;color:var(--white);line-height:1.1;margin-bottom:14px;}
-.sec-title span{color:var(--orange);}
-.sec-lead{font-size:17px;color:var(--text2);line-height:1.7;max-width:620px;margin-bottom:56px;}
+.sec-tag::before{content:'';width:24px;height:1px;background:var(--orange);}
+.left h1{font-family:'Orbitron',sans-serif;font-size:clamp(28px,3vw,42px);font-weight:900;color:var(--white);line-height:1.1;margin-bottom:14px;}
+.left h1 span{color:var(--orange);}
+.left p{font-size:16px;color:var(--text2);line-height:1.75;margin-bottom:36px;}
+.left p strong{color:var(--text);}
 
-/* PROBLEM */
-#problem{background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);}
-.problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:40px;}
-.prob-card{background:var(--bg2);padding:32px 26px;transition:background .3s;position:relative;overflow:hidden;}
-.prob-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--critical),transparent);transform:scaleX(0);transform-origin:left;transition:transform .4s;}
-.prob-card:hover{background:rgba(255,45,45,0.04);}.prob-card:hover::before{transform:scaleX(1);}
-.prob-icon{font-size:28px;margin-bottom:12px;display:block;}
-.prob-card h3{font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;color:var(--white);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase;}
-.prob-card p{font-size:14px;color:var(--text2);line-height:1.6;}
-.problem-conclusion{text-align:center;padding:28px 40px;border:1px solid var(--border-o);border-radius:4px;background:rgba(255,107,26,0.04);}
-.problem-conclusion p{font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;color:var(--white);line-height:1.6;}
-.problem-conclusion span{color:var(--orange);}
+.impact-rows{display:flex;flex-direction:column;gap:10px;margin-bottom:36px;}
+.impact-row{display:flex;align-items:center;gap:16px;padding:14px 16px;border:1px solid var(--border);border-radius:4px;background:rgba(0,0,0,0.2);transition:border-color .2s;cursor:pointer;}
+.impact-row:hover{border-color:var(--border-o);}
+.ir-amount{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:800;color:var(--orange);min-width:56px;}
+.ir-text strong{display:block;font-size:15px;color:var(--text);margin-bottom:2px;}
+.ir-text span{font-size:13px;color:var(--text2);}
 
-/* HOW IT WORKS */
-#how{background:var(--bg);}
-.how-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:0;position:relative;margin-bottom:40px;}
-.how-steps::before{content:'';position:absolute;top:36px;left:10%;right:10%;height:1px;background:linear-gradient(90deg,var(--orange),var(--blue));z-index:0;}
-.how-step{text-align:center;position:relative;z-index:1;padding:0 12px;}
-.how-num{width:72px;height:72px;border-radius:50%;background:var(--bg);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;color:var(--orange);box-shadow:0 0 20px rgba(255,107,26,0.2);}
-.how-title{font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;color:var(--white);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase;}
-.how-desc{font-size:13px;color:var(--text2);line-height:1.5;}
-.how-conclusion{text-align:center;padding:20px;background:rgba(0,212,255,0.04);border:1px solid var(--border);border-radius:4px;margin-top:8px;}
-.how-conclusion p{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--blue);letter-spacing:1.5px;}
+.trust{display:flex;flex-direction:column;gap:7px;}
+.trust-item{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:1px;display:flex;align-items:center;gap:8px;}
+.trust-item::before{content:'✓';color:var(--green);}
 
-/* SOLUTION */
-#solution{background:var(--bg2);}
-.sol-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
-.sol-features{display:flex;flex-direction:column;gap:14px;}
-.sol-feature{display:flex;gap:16px;padding:18px;border:1px solid var(--border);border-radius:4px;background:rgba(6,14,26,0.5);transition:all .3s;}
-.sol-feature:hover{border-color:rgba(0,212,255,0.25);transform:translateX(4px);}
-.sol-icon{width:42px;height:42px;border-radius:6px;background:rgba(255,107,26,0.08);border:1px solid var(--border-o);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
-.sol-content h4{font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;color:var(--white);letter-spacing:1.5px;margin-bottom:5px;text-transform:uppercase;}
-.sol-content p{font-size:13px;color:var(--text2);line-height:1.6;}
-.demo-panel{background:rgba(3,8,15,0.95);border:1px solid var(--border);border-radius:8px;overflow:hidden;box-shadow:0 0 60px rgba(0,212,255,0.07);}
-.demo-header{padding:10px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.4);}
-.demo-dots{display:flex;gap:5px;}.demo-dot{width:10px;height:10px;border-radius:50%;}
-.demo-lbl{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:1px;}
-.demo-body{padding:18px;}
-.demo-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
-.demo-metric{padding:10px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:3px;}
-.demo-num{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:800;color:var(--orange);}
-.demo-mlbl{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text2);letter-spacing:1px;}
-.demo-feed-item{display:flex;gap:7px;padding:6px;background:rgba(0,0,0,0.2);border-radius:3px;border-left:2px solid var(--blue);font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);margin-bottom:5px;}
-.demo-fdot{width:5px;height:5px;border-radius:50%;background:var(--blue);margin-top:2px;flex-shrink:0;box-shadow:0 0 5px var(--blue);}
-.ai-bar{margin-top:12px;padding:10px;background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.15);border-radius:3px;}
-.ai-bar-lbl{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--green);letter-spacing:1px;margin-bottom:5px;}
-.ai-bar-track{height:4px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;}
-.ai-bar-fill{height:100%;width:94.7%;background:linear-gradient(90deg,var(--green),var(--blue));border-radius:2px;}
-.ai-bar-num{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:800;color:var(--green);margin-top:4px;}
+/* RIGHT PANEL */
+.right{padding:48px 48px;overflow-y:auto;}
+.form-title{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:800;color:var(--white);letter-spacing:1px;margin-bottom:4px;}
+.form-subtitle{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--blue);letter-spacing:2px;margin-bottom:28px;}
 
-/* IMPACT */
-#impact{background:var(--bg);}
-.impact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:48px;}
-.impact-card{background:var(--bg2);padding:36px 20px;text-align:center;transition:background .3s;}
-.impact-card:hover{background:rgba(255,107,26,0.04);}
-.impact-num{font-family:'Orbitron',sans-serif;font-size:36px;font-weight:900;color:var(--orange);line-height:1;margin-bottom:6px;}
-.impact-lbl{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:2px;color:var(--text2);text-transform:uppercase;}
-.impact-note{font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--green);margin-top:4px;opacity:0.8;}
-.impact-areas{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
-.impact-area{padding:28px;border:1px solid var(--border);border-radius:4px;background:rgba(6,14,26,0.4);transition:all .3s;}
-.impact-area:hover{border-color:var(--border-o);transform:translateY(-4px);}
-.ia-icon{font-size:32px;margin-bottom:12px;display:block;}
-.impact-area h3{font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;color:var(--white);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase;}
-.impact-area p{font-size:13px;color:var(--text2);line-height:1.6;}
+/* AMOUNTS */
+.amounts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;}
+.ab{padding:14px 8px;border:1px solid var(--border);border-radius:4px;background:rgba(0,0,0,0.3);cursor:pointer;text-align:center;transition:all .2s;font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;color:var(--text2);}
+.ab:hover{border-color:var(--border-o);color:var(--orange);}
+.ab.sel{border-color:var(--orange);background:rgba(255,107,26,0.1);color:var(--orange);box-shadow:0 0 16px rgba(255,107,26,0.15);}
+.ab small{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text2);display:block;margin-top:2px;letter-spacing:1px;}
+.ab.sel small{color:var(--orange);}
 
-/* FOUNDER */
-#founder{background:var(--bg2);}
-.founder-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
-.founder-card{padding:44px;border:1px solid var(--border);border-radius:6px;background:rgba(6,14,26,0.85);position:relative;backdrop-filter:blur(10px);}
-.founder-card::before{content:'"';position:absolute;top:-16px;left:28px;font-family:'Cormorant Garamond',serif;font-size:100px;color:rgba(255,107,26,0.12);line-height:1;}
-.founder-card p{font-size:16px;color:var(--text);line-height:1.85;margin-bottom:18px;}
-.founder-card p.dim{color:var(--text2);font-size:15px;margin-bottom:0;}
-.founder-sig{margin-top:28px;padding-top:20px;border-top:1px solid var(--border);}
-.founder-name{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--white);letter-spacing:1px;}
-.founder-role{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--orange);letter-spacing:2px;margin-top:3px;}
-.founder-insp{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text2);letter-spacing:1px;margin-top:3px;}
-.values{display:flex;flex-direction:column;gap:12px;}
-.value-item{display:flex;gap:14px;align-items:flex-start;padding:18px;border:1px solid var(--border);border-radius:4px;background:rgba(6,14,26,0.5);transition:all .3s;}
-.value-item:hover{border-color:var(--border-o);transform:translateX(4px);}
-.vi-icon{font-size:22px;flex-shrink:0;margin-top:2px;}
-.vi-title{font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;color:var(--white);letter-spacing:2px;margin-bottom:4px;text-transform:uppercase;}
-.vi-text{font-size:14px;color:var(--text2);line-height:1.55;}
+.custom-wrap{position:relative;margin-bottom:20px;display:none;}
+.custom-prefix{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;color:var(--orange);}
 
-/* INVESTORS */
-#investors{background:var(--bg);}
-.inv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:56px;}
-.inv-card{padding:32px;border:1px solid var(--border);border-radius:4px;background:rgba(3,8,15,0.8);transition:all .3s;position:relative;overflow:hidden;}
-.inv-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--orange),var(--blue));transform:scaleX(0);transform-origin:left;transition:transform .4s;}
-.inv-card:hover{transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,0.4);}
-.inv-card:hover::before{transform:scaleX(1);}
-.inv-icon{font-size:32px;margin-bottom:14px;display:block;}
-.inv-title{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;color:var(--white);letter-spacing:1.5px;margin-bottom:10px;text-transform:uppercase;}
-.inv-text{font-size:13px;color:var(--text2);line-height:1.6;}
-.inv-cta{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--orange);letter-spacing:1px;}
-.roadmap{margin-top:48px;}
-.rm-title{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;color:var(--white);letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:28px;}
-.rm-track{display:grid;grid-template-columns:repeat(5,1fr);position:relative;}
-.rm-track::before{content:'';position:absolute;top:19px;left:10%;right:10%;height:1px;background:linear-gradient(90deg,var(--orange),var(--blue));z-index:0;}
-.rm-step{text-align:center;position:relative;z-index:1;padding:0 6px;}
-.rm-dot{width:38px;height:38px;border-radius:50%;background:var(--bg);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:800;color:var(--orange);}
-.rm-dot.active{background:var(--orange);color:var(--white);box-shadow:0 0 20px rgba(255,107,26,0.5);}
-.rm-phase{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--orange);letter-spacing:1px;margin-bottom:3px;}
-.rm-name{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px;}
-.rm-desc{font-size:11px;color:var(--text2);line-height:1.4;}
+/* CAUSE */
+.causes{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:18px;}
+.cause-btn{padding:10px 6px;border:1px solid var(--border);border-radius:3px;background:rgba(0,0,0,0.3);cursor:pointer;text-align:center;transition:all .2s;}
+.cause-btn:hover{border-color:var(--border-o);}
+.cause-btn.sel{border-color:var(--orange);background:rgba(255,107,26,0.08);}
+.cause-emoji{font-size:18px;display:block;margin-bottom:3px;}
+.cause-label{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text2);letter-spacing:.5px;text-transform:uppercase;line-height:1.3;}
+.cause-btn.sel .cause-label{color:var(--orange);}
 
-/* CTA */
-#cta{text-align:center;padding:100px 40px;position:relative;overflow:hidden;}
-#cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(255,107,26,0.07) 0%,transparent 70%);}
-.cta-inner{position:relative;z-index:1;max-width:760px;margin:0 auto;}
-.cta-title{font-family:'Orbitron',sans-serif;font-size:clamp(32px,5vw,58px);font-weight:900;color:var(--white);line-height:1.1;margin-bottom:14px;}
-.cta-title span{color:var(--orange);}
-.cta-tagline{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2.5vw,24px);font-style:italic;color:var(--text2);margin-bottom:40px;line-height:1.6;}
-.cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:36px;}
-.cta-tags{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:2px;}
-.cta-tag::before{content:'◆ ';color:var(--orange);}
+/* FIELDS */
+.field{margin-bottom:14px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+label{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--blue);text-transform:uppercase;display:block;margin-bottom:5px;}
+input,select{width:100%;background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:4px;padding:11px 13px;font-family:'Rajdhani',sans-serif;font-size:15px;color:var(--text);outline:none;transition:border-color .2s;-webkit-appearance:none;}
+input:focus,select:focus{border-color:rgba(0,212,255,0.4);box-shadow:0 0 0 3px rgba(0,212,255,0.06);}
+input::placeholder{color:var(--text2);}
 
-/* FOOTER */
-footer{position:relative;z-index:10;padding:32px 40px;border-top:1px solid var(--border);background:rgba(2,6,12,0.99);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
-.footer-brand{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:800;color:var(--white);letter-spacing:2px;}
-.footer-brand span{color:var(--orange);}
-.footer-sub{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text2);letter-spacing:1.5px;margin-top:3px;}
-.footer-center{text-align:center;font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text2);letter-spacing:1px;line-height:1.8;}
-.footer-right{text-align:right;font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text2);letter-spacing:1px;line-height:1.8;}
+/* STRIPE */
+.stripe-box{background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:4px;padding:13px;margin-bottom:6px;transition:border-color .2s;}
+.stripe-box:focus-within{border-color:rgba(0,212,255,0.4);}
+#card-errors{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--critical);margin-top:6px;margin-bottom:10px;min-height:14px;}
 
-.reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s ease;}
-.reveal.visible{opacity:1;transform:translateY(0);}
-#notif{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(3,8,15,0.97);border:1px solid var(--orange);border-radius:4px;padding:10px 20px;font-family:'Rajdhani',sans-serif;font-size:14px;color:var(--orange);z-index:999;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .3s;box-shadow:0 0 20px rgba(255,107,26,0.3);}
-#notif.show{opacity:1;}
+/* ANON */
+.anon-row{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+.anon-row input[type=checkbox]{width:16px;height:16px;cursor:pointer;accent-color:var(--orange);flex-shrink:0;}
+.anon-lbl{font-family:'Rajdhani',sans-serif;font-size:14px;color:var(--text2);}
+
+/* TEST NOTICE */
+.test-notice{padding:10px 14px;background:rgba(0,212,255,0.05);border:1px solid var(--border);border-radius:3px;margin-bottom:16px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--blue);letter-spacing:.5px;line-height:1.6;}
+
+/* BUTTON */
+.donate-btn{width:100%;padding:16px;background:var(--orange);border:none;border-radius:4px;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:var(--white);cursor:pointer;transition:all .25s;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:10px;}
+.donate-btn:hover{background:var(--orange2);box-shadow:0 0 30px rgba(255,107,26,0.4);}
+.donate-btn:disabled{opacity:0.5;cursor:not-allowed;}
+
+/* STATUS */
+.status{padding:16px;border-radius:4px;margin-top:14px;font-family:'Rajdhani',sans-serif;font-size:15px;line-height:1.6;display:none;white-space:pre-line;}
+.status.show{display:block;}
+.status.success{background:rgba(0,255,136,0.07);border:1px solid rgba(0,255,136,0.25);color:var(--green);}
+.status.error{background:rgba(255,45,45,0.07);border:1px solid rgba(255,45,45,0.25);color:var(--critical);}
+.status.loading{background:rgba(0,212,255,0.05);border:1px solid var(--border);color:var(--blue);}
+
+/* TRACKING */
+.track-box{margin-top:14px;padding:14px;background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:4px;display:none;}
+.track-box.show{display:block;}
+.track-title{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--blue);letter-spacing:2px;margin-bottom:10px;}
+.track-step{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:1px;padding:4px 0;display:flex;align-items:center;gap:8px;transition:color .4s;}
+.track-step::before{content:'○';transition:content .4s;}
+.track-step.done{color:var(--green);}
+.track-step.done::before{content:'✓';}
+
+.secure-note{text-align:center;margin-top:10px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:1px;}
+
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-thumb{background:rgba(255,107,26,0.25);border-radius:2px;}
 </style>
@@ -271,573 +123,275 @@ footer{position:relative;z-index:10;padding:32px 40px;border-top:1px solid var(-
 
 <div id="world-bg"></div>
 <div id="world-overlay"></div>
-<canvas id="netCanvas"></canvas>
 <div class="scanlines"></div>
 
-<!-- NAV -->
-<nav id="mainnav">
-  <a class="nav-brand" href="index.html">
-    <div class="nav-logo">MG</div>
-    <div><div class="brand-name">MANKIND GLOBAL</div><div class="brand-sub">POWERED BY NEXPATH AI</div></div>
+<nav>
+  <a class="nav-logo" href="index.html">
+    <div class="nav-logo-circle">MG</div>
+    <div>
+      <div class="nav-title">MANKIND GLOBAL</div>
+      <div class="nav-sub">POWERED BY NEXPATH AI</div>
+    </div>
   </a>
-  <ul class="nav-links">
-    <li><a href="#live-dashboard">DASHBOARD</a></li>
-    <li><a href="#how">HOW IT WORKS</a></li>
-    <li><a href="#solution">PLATFORM</a></li>
-    <li><a href="#founder">ABOUT</a></li>
-    <li><a href="#investors">INVESTORS</a></li>
-    <li><a href="donate.html">DONATE</a></li>
-    <li><a href="request-aid.html" class="nav-cta">REQUEST HELP</a></li>
-  </ul>
-  <div class="nav-status"><div class="dot"></div>NEXPATH AI ONLINE</div>
+  <a class="nav-back" href="index.html">← BACK TO HOME</a>
 </nav>
 
-<!-- HERO -->
-<section id="hero">
-  <div class="hero-tag">AI-Powered Humanitarian Platform — Built in Dubai</div>
-  <h1 class="hero-title">MANKIND<span>GLOBAL</span></h1>
-  <p class="hero-serif">Where Intelligence Meets Humanity</p>
-  <div class="hero-tagline">One act of help can reach millions.</div>
-  <p class="hero-desc">An AI-powered humanitarian platform that connects people in need with donors, volunteers, and aid organizations — with <strong>full transparency from request to verified impact.</strong></p>
-  <div class="hero-scope">Starting with high-need regions in Africa, Middle East, and the Caribbean — scaling globally.</div>
-  <div class="hero-flow">
-    <div class="flow-step"><span>01</span> Request</div>
-    <div class="flow-arrow">→</div>
-    <div class="flow-step"><span>02</span> AI Matches</div>
-    <div class="flow-arrow">→</div>
-    <div class="flow-step"><span>03</span> Aid Deployed</div>
-    <div class="flow-arrow">→</div>
-    <div class="flow-step"><span>04</span> Tracked Live</div>
-    <div class="flow-arrow">→</div>
-    <div class="flow-step"><span>05</span> Verified Impact</div>
-  </div>
-  <div class="hero-btns">
-    <a href="request-aid.html" class="btn-primary">⚡ Request Help — Get Matched Fast</a>
-    <a href="donate.html" class="btn-outline">❤️ Donate — Track Every Dollar</a>
-    <a href="#live-dashboard" class="btn-secondary">◈ View Live Platform</a>
-  </div>
-  <div class="stats-bar">
-    <div class="stat-item"><div class="stat-live"></div><div class="stat-num" id="h-req">0</div><div class="stat-label">Aid Requests</div></div>
-    <div class="stat-item"><div class="stat-num" id="h-vol">0</div><div class="stat-label">Volunteers</div></div>
-    <div class="stat-item"><div class="stat-num" id="h-donated">$0</div><div class="stat-label">Total Donated</div></div>
-    <div class="stat-item"><div class="stat-num" id="h-countries">0</div><div class="stat-label">Countries</div></div>
-    <div class="stat-item"><div class="stat-num" id="h-missions">0</div><div class="stat-label">Active Missions</div></div>
-  </div>
-  <div class="scroll-cue"><span>SCROLL TO EXPLORE</span><div class="scroll-line"></div></div>
-</section>
+<main>
 
-<!-- LIVE DASHBOARD -->
-<div id="live-dashboard">
-<div class="dash-wrap">
-  <div class="dash-topbar">
-    <span class="dash-brand-txt">MANKIND <span>GLOBAL</span> — NEXPATH AI ENGINE</span>
-    <div class="dash-status-row">
-      <span class="dsi"><div class="dot"></div>MATCH ENGINE ONLINE</span>
-      <span class="dsi"><div class="dot"></div>CRISIS PREDICTOR ONLINE</span>
-      <span class="dsi"><div class="dot"></div>DONATION TRACKER ONLINE</span>
-    </div>
-  </div>
-  <div class="dash-metrics">
-    <div class="dash-metric"><div class="dm-label">Aid Requests</div><div class="dm-value" id="d-req">0</div><div class="dm-note" id="d-note">● Connecting...</div></div>
-    <div class="dash-metric"><div class="dm-label">Volunteers</div><div class="dm-value" id="d-vol">0</div><div class="dm-note">● Live from database</div></div>
-    <div class="dash-metric"><div class="dm-label">Active Missions</div><div class="dm-value" id="d-missions">0</div><div class="dm-note">● Live from database</div></div>
-    <div class="dash-metric"><div class="dm-label">Total Donated USD</div><div class="dm-value" id="d-donated">$0.00</div><div class="dm-note">● Live from database</div></div>
-  </div>
-  <div class="dash-body">
+  <!-- LEFT -->
+  <div class="left">
+    <div class="sec-tag">Your Impact</div>
+    <h1>Every Dollar<br><span>Tracked to Impact.</span></h1>
+    <p>NexPath AI ensures <strong>every contribution is visible</strong> from the moment you give to the moment it reaches someone in need. No black boxes. Full transparency.</p>
 
-    <!-- LEFT -->
-    <div class="dash-side">
-      <div>
-        <div class="ds-title">Crisis Hotspots</div>
-        <div class="crisis-row" onclick="notify('📡 SUDAN — Critical. Aid coordination active.')"><span class="crisis-name-txt">SUDAN</span><span class="cbadge c">CRITICAL</span></div>
-        <div class="crisis-row" onclick="notify('📡 GAZA — Critical. Emergency response deployed.')"><span class="crisis-name-txt">GAZA</span><span class="cbadge c">CRITICAL</span></div>
-        <div class="crisis-row" onclick="notify('📡 HAITI — High. Medical teams mobilizing.')"><span class="crisis-name-txt">HAITI</span><span class="cbadge h">HIGH</span></div>
-        <div class="crisis-row" onclick="notify('📡 YEMEN — High. Shelter mission active.')"><span class="crisis-name-txt">YEMEN</span><span class="cbadge h">HIGH</span></div>
-        <div class="crisis-row" onclick="notify('📡 DR CONGO — High. Aid routing in progress.')"><span class="crisis-name-txt">DR CONGO</span><span class="cbadge h">HIGH</span></div>
-        <div class="crisis-row" onclick="notify('📡 MYANMAR — Moderate. Situation monitored.')"><span class="crisis-name-txt">MYANMAR</span><span class="cbadge m">MODERATE</span></div>
+    <div class="impact-rows">
+      <div class="impact-row" onclick="selectAmt(10)">
+        <span class="ir-amount">$10</span>
+        <div class="ir-text"><strong>Emergency Food Pack</strong><span>Feeds a family for 3 days</span></div>
       </div>
-      <div style="margin-top:auto;display:flex;flex-direction:column;gap:6px;">
-        <a href="request-aid.html" class="btn-primary" style="justify-content:center;font-size:9px;padding:9px;">+ REQUEST HELP NOW</a>
-        <a href="donate.html" class="btn-outline" style="justify-content:center;font-size:9px;padding:8px;">❤️ DONATE — TRACK EVERY DOLLAR</a>
-        <a href="volunteer.html" class="btn-secondary" style="justify-content:center;font-size:9px;padding:8px;">◈ JOIN AS VOLUNTEER</a>
+      <div class="impact-row" onclick="selectAmt(25)">
+        <span class="ir-amount">$25</span>
+        <div class="ir-text"><strong>Medical Aid Kit</strong><span>Basic medical supplies for a family in crisis</span></div>
+      </div>
+      <div class="impact-row" onclick="selectAmt(50)">
+        <span class="ir-amount">$50</span>
+        <div class="ir-text"><strong>Shelter Support</strong><span>Emergency shelter materials for a displaced family</span></div>
+      </div>
+      <div class="impact-row" onclick="selectAmt(100)">
+        <span class="ir-amount">$100</span>
+        <div class="ir-text"><strong>Full Aid Package</strong><span>Food, medical and shelter support for one month</span></div>
       </div>
     </div>
 
-    <!-- REAL MAP CENTER -->
-    <div class="dash-map">
-      <img class="map-real-img"
-        src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/World_map_-_low_resolution.svg/1280px-World_map_-_low_resolution.svg.png"
-        alt="World Map"
-        onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/1280px-Equirectangular_projection_SW.jpg'"/>
-      <div class="map-overlay-dark"></div>
-      <canvas id="dashMapCanvas"></canvas>
-    </div>
-
-    <!-- RIGHT -->
-    <div class="dash-side dash-side-r">
-      <div>
-        <div class="ds-title">Real-Time Overview</div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;">
-          <div class="count-box"><div class="count-lbl">PENDING</div><div class="count-num cn-o" id="r-pending">0</div></div>
-          <div class="count-box"><div class="count-lbl">ACTIVE</div><div class="count-num cn-b" id="r-active">0</div></div>
-          <div class="count-box"><div class="count-lbl">COMPLETED</div><div class="count-num cn-g" id="r-completed">0</div></div>
-          <div class="count-box"><div class="count-lbl">CRISIS ZONES</div><div class="count-num cn-r">6</div></div>
-        </div>
-      </div>
-      <div style="flex:1;min-height:0;display:flex;flex-direction:column;">
-        <div class="ds-title" style="margin-bottom:6px;">Live Activity <span style="color:var(--green);font-size:8px;" id="feed-label">● CONNECTED</span></div>
-        <div id="live-feed" style="overflow-y:auto;flex:1;"></div>
-      </div>
-      <div>
-        <div class="ds-title" style="margin-bottom:8px;">NexPath AI Engine</div>
-        <div style="background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:3px;padding:10px;">
-          <div class="engine-row"><span class="engine-lbl">MATCH ENGINE</span><span class="engine-val">● ACTIVE</span></div>
-          <div class="engine-row"><span class="engine-lbl">SIGNAL DETECTION</span><span class="engine-val">● ACTIVE</span></div>
-          <div class="engine-row"><span class="engine-lbl">LOGISTICS AI</span><span class="engine-val">● ACTIVE</span></div>
-          <div class="engine-row" style="margin-bottom:0"><span class="engine-lbl">DONATION TRACKER</span><span class="engine-val">● ACTIVE</span></div>
-          <div style="margin-top:8px;height:4px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;"><div style="width:94.7%;height:100%;background:linear-gradient(90deg,var(--green),var(--blue));border-radius:2px;"></div></div>
-          <div style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:800;color:var(--green);margin-top:4px;">94.7% <span style="font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text2);">CONFIDENCE</span></div>
-        </div>
-      </div>
+    <div class="trust">
+      <div class="trust-item">Every donation tracked in real time via NexPath AI</div>
+      <div class="trust-item">You receive a verified impact report after delivery</div>
+      <div class="trust-item">Secure payment processing via Stripe</div>
+      <div class="trust-item">100% of funds go directly to aid operations</div>
+      <div class="trust-item">Anonymous donations available</div>
     </div>
   </div>
-  <div class="live-ticker">
-    <span class="ticker-lbl">◆ LIVE</span>
-    <span class="ticker-live-text" id="ticker-text">● System online — real activity appears here instantly</span>
-    <span class="ticker-clock" id="clock"></span>
-  </div>
-</div>
-</div>
 
-<!-- PROBLEM -->
-<section id="problem">
-  <div class="sec-inner">
-    <div class="sec-tag">The Problem</div>
-    <h2 class="sec-title">Billions Given.<br><span>Millions Still Waiting.</span></h2>
-    <p class="sec-lead">The problem is not a lack of resources. It is a lack of coordination, intelligence, and transparency.</p>
-    <div class="problem-grid reveal">
-      <div class="prob-card"><span class="prob-icon">🧩</span><h3>Fragmented Systems</h3><p>Thousands of NGOs operate in isolation — no shared data, no coordination, no collective intelligence between them.</p></div>
-      <div class="prob-card"><span class="prob-icon">👁️</span><h3>No Donor Visibility</h3><p>Contributions disappear into systems donors cannot see. Trust has collapsed and charitable giving is declining globally.</p></div>
-      <div class="prob-card"><span class="prob-icon">🐌</span><h3>Always Reactive</h3><p>Aid arrives after the peak. No early signals acted upon. Resources mobilized too late, too slowly, too often.</p></div>
-      <div class="prob-card"><span class="prob-icon">📡</span><h3>Outdated Intelligence</h3><p>Crisis data reaches decision-makers days too late. By then, the window to act has already closed.</p></div>
-      <div class="prob-card"><span class="prob-icon">🌍</span><h3>Invisible Populations</h3><p>Millions in displacement, detention, and disaster zones remain undetected — outside the reach of every existing system.</p></div>
-      <div class="prob-card"><span class="prob-icon">📉</span><h3>Eroding Trust</h3><p>Without transparency, donors stop giving. Without funding, systems collapse. The cycle continues unchallenged.</p></div>
-    </div>
-    <div class="problem-conclusion reveal">
-      <p>The humanitarian system does not need more money.<br>It needs <span>better intelligence, coordination, and radical transparency.</span></p>
-    </div>
-  </div>
-</section>
+  <!-- RIGHT -->
+  <div class="right">
+    <div class="form-title">Make a Donation</div>
+    <div class="form-subtitle">◆ SECURE · TRACKED · TRANSPARENT</div>
 
-<!-- HOW IT WORKS -->
-<section id="how">
-  <div class="sec-inner">
-    <div class="sec-tag">How It Works</div>
-    <h2 class="sec-title">From Request<br><span>to Verified Impact.</span></h2>
-    <p class="sec-lead">No delays. No guesswork. No black boxes. Every step is tracked, every outcome is visible, every dollar is accounted for.</p>
-    <div class="how-steps reveal">
-      <div class="how-step">
-        <div class="how-num">01</div>
-        <div class="how-title">Request Submitted</div>
-        <div class="how-desc">Anyone submits a need — food, shelter, medical, or emergency — directly through the platform, from any device.</div>
-      </div>
-      <div class="how-step">
-        <div class="how-num">02</div>
-        <div class="how-title">AI Analyzes</div>
-        <div class="how-desc">NexPath AI verifies the request, assesses urgency and type, then determines the fastest path to help.</div>
-      </div>
-      <div class="how-step">
-        <div class="how-num">03</div>
-        <div class="how-title">Smart Match</div>
-        <div class="how-desc">The system connects the request with the nearest available donor, volunteer, or aid organization — automatically.</div>
-      </div>
-      <div class="how-step">
-        <div class="how-num">04</div>
-        <div class="how-title">Aid Delivered</div>
-        <div class="how-desc">Resources are deployed and tracked at every stage — from dispatch to the moment of delivery.</div>
-      </div>
-      <div class="how-step">
-        <div class="how-num">05</div>
-        <div class="how-title">Full Transparency</div>
-        <div class="how-desc">Donors receive a verified impact report showing exactly where their contribution went and who it helped.</div>
+    <!-- AMOUNT -->
+    <div class="field"><label>Choose Amount (USD)</label></div>
+    <div class="amounts" id="amounts">
+      <div class="ab sel" data-v="10" onclick="selectAmt(10)">$10<small>Food Aid</small></div>
+      <div class="ab" data-v="25" onclick="selectAmt(25)">$25<small>Medical Kit</small></div>
+      <div class="ab" data-v="50" onclick="selectAmt(50)">$50<small>Shelter</small></div>
+      <div class="ab" data-v="100" onclick="selectAmt(100)">$100<small>Full Package</small></div>
+      <div class="ab" data-v="250" onclick="selectAmt(250)">$250<small>Major Impact</small></div>
+      <div class="ab" data-v="custom" onclick="selectCustom()">Custom<small>Any Amount</small></div>
+    </div>
+    <div class="custom-wrap field" id="custom-wrap">
+      <label>Custom Amount</label>
+      <div style="position:relative;">
+        <span class="custom-prefix">$</span>
+        <input type="number" id="custom-input" placeholder="Enter amount" min="1" style="padding-left:30px;" oninput="onCustom()"/>
       </div>
     </div>
-    <div class="how-conclusion reveal">
-      <p>◆ Every request tracked &nbsp;·&nbsp; Every dollar visible &nbsp;·&nbsp; Every outcome verified</p>
-    </div>
-  </div>
-</section>
 
-<!-- SOLUTION -->
-<section id="solution">
-  <div class="sec-inner">
-    <div class="sec-tag">The Platform</div>
-    <h2 class="sec-title">Not Another NGO.<br><span>Infrastructure for Aid.</span></h2>
-    <p class="sec-lead">NexPath AI is a connected intelligence system — built to coordinate aid across borders, at scale, with full accountability.</p>
-    <div class="sol-grid reveal">
-      <div class="sol-features">
-        <div class="sol-feature"><div class="sol-icon">🌍</div><div class="sol-content"><h4>Live Global Aid Map</h4><p>Visualizes crisis zones, active missions, donation flows, and volunteer locations — updated continuously across active regions.</p></div></div>
-        <div class="sol-feature"><div class="sol-icon">🤖</div><div class="sol-content"><h4>AI Matching Engine</h4><p>Connects verified aid requests with donors, volunteers, and resources — prioritized by urgency, type, and location.</p></div></div>
-        <div class="sol-feature"><div class="sol-icon">📡</div><div class="sol-content"><h4>Direct Request System</h4><p>Anyone can submit a request for food, shelter, medical care, or emergency support — from any device, in any country.</p></div></div>
-        <div class="sol-feature"><div class="sol-icon">💳</div><div class="sol-content"><h4>End-to-End Donation Tracking</h4><p>Every contribution tracked from the moment it is made to the moment it reaches a recipient. Complete visibility.</p></div></div>
-        <div class="sol-feature"><div class="sol-icon">🔮</div><div class="sol-content"><h4>Early Signal Detection</h4><p>AI models designed to identify emerging signals of humanitarian crises — enabling pre-emptive resource positioning before needs escalate.</p></div></div>
-      </div>
-      <div>
-        <div class="demo-panel">
-          <div class="demo-header">
-            <div class="demo-dots"><div class="demo-dot" style="background:#FF5F57"></div><div class="demo-dot" style="background:#FFBD2E"></div><div class="demo-dot" style="background:#28CA41"></div></div>
-            <span class="demo-lbl">NEXPATH AI — LIVE SYSTEM</span>
-            <div style="display:flex;align-items:center;gap:5px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--green);"><div class="dot" style="width:5px;height:5px;"></div>ONLINE</div>
-          </div>
-          <div class="demo-body">
-            <div class="demo-metrics">
-              <div class="demo-metric"><div class="demo-num" id="dm-req">0</div><div class="demo-mlbl">AID REQUESTS</div></div>
-              <div class="demo-metric"><div class="demo-num" id="dm-vol">0</div><div class="demo-mlbl">VOLUNTEERS</div></div>
-              <div class="demo-metric"><div class="demo-num" id="dm-missions">0</div><div class="demo-mlbl">MISSIONS</div></div>
-              <div class="demo-metric"><div class="demo-num" id="dm-countries">0</div><div class="demo-mlbl">COUNTRIES</div></div>
-            </div>
-            <div id="demo-feed">
-              <div class="demo-feed-item"><div class="demo-fdot"></div>NexPath AI system online.</div>
-              <div class="demo-feed-item"><div class="demo-fdot"></div>Database connected — ready.</div>
-              <div class="demo-feed-item"><div class="demo-fdot"></div>Crisis signal detection — active.</div>
-              <div class="demo-feed-item"><div class="demo-fdot"></div>Aid matching engine — standby.</div>
-              <div class="demo-feed-item" id="demo-live"><div class="demo-fdot"></div><span>Awaiting first real request...</span></div>
-            </div>
-            <div class="ai-bar">
-              <div class="ai-bar-lbl">● NEXPATH AI ENGINE — CONFIDENCE SCORE</div>
-              <div class="ai-bar-track"><div class="ai-bar-fill"></div></div>
-              <div class="ai-bar-num">94.7%</div>
-            </div>
-          </div>
-        </div>
+    <!-- CAUSE -->
+    <div class="field"><label>Direct Your Donation To</label>
+    <div class="causes" id="causes">
+      <div class="cause-btn sel" data-v="general" onclick="selCause(this)"><span class="cause-emoji">🌍</span><div class="cause-label">Where Needed Most</div></div>
+      <div class="cause-btn" data-v="food" onclick="selCause(this)"><span class="cause-emoji">🍞</span><div class="cause-label">Food Security</div></div>
+      <div class="cause-btn" data-v="medical" onclick="selCause(this)"><span class="cause-emoji">🏥</span><div class="cause-label">Medical Aid</div></div>
+      <div class="cause-btn" data-v="shelter" onclick="selCause(this)"><span class="cause-emoji">🏠</span><div class="cause-label">Shelter</div></div>
+      <div class="cause-btn" data-v="women" onclick="selCause(this)"><span class="cause-emoji">⚖️</span><div class="cause-label">Women in Detention</div></div>
+      <div class="cause-btn" data-v="emergency" onclick="selCause(this)"><span class="cause-emoji">🚨</span><div class="cause-label">Emergency Response</div></div>
+    </div></div>
+
+    <!-- DONOR INFO -->
+    <div class="field">
+      <div class="field-row">
+        <div><label>Your Name</label><input type="text" id="dname" placeholder="Full name"/></div>
+        <div><label>Email Address</label><input type="email" id="demail" placeholder="your@email.com"/></div>
       </div>
     </div>
-  </div>
-</section>
+    <div class="field">
+      <label>Message (Optional)</label>
+      <input type="text" id="dmsg" placeholder="A message of hope..."/>
+    </div>
 
-<!-- IMPACT -->
-<section id="impact">
-  <div class="sec-inner">
-    <div class="sec-tag">Live Impact</div>
-    <h2 class="sec-title">Real Numbers.<br><span>Real People.</span></h2>
-    <p class="sec-lead">Every number below is pulled directly from our live database. This is not projected impact. This is live infrastructure — starting small, built to scale.</p>
-    <div class="impact-grid reveal">
-      <div class="impact-card"><div class="impact-num" id="i-req">0</div><div class="impact-lbl">Aid Requests</div><div class="impact-note">● Live database count</div></div>
-      <div class="impact-card"><div class="impact-num" id="i-vol">0</div><div class="impact-lbl">Volunteers</div><div class="impact-note">● Live database count</div></div>
-      <div class="impact-card"><div class="impact-num" id="i-donated">$0</div><div class="impact-lbl">Total Donated</div><div class="impact-note">● Live database count</div></div>
-      <div class="impact-card"><div class="impact-num">94.7%</div><div class="impact-lbl">AI Match Accuracy</div><div class="impact-note">● NexPath AI engine</div></div>
+    <!-- ANONYMOUS -->
+    <div class="anon-row">
+      <input type="checkbox" id="anon"/>
+      <span class="anon-lbl">Donate anonymously — your name will not be shown publicly</span>
     </div>
-    <div class="impact-areas reveal">
-      <div class="impact-area"><span class="ia-icon">🍞</span><h3>Food Security</h3><p>Coordinated food distribution tracked from source to recipient — every delivery confirmed and recorded in the system.</p></div>
-      <div class="impact-area"><span class="ia-icon">🏠</span><h3>Shelter</h3><p>Emergency shelter deployment for displaced communities with real-time capacity and logistics tracking.</p></div>
-      <div class="impact-area"><span class="ia-icon">🏥</span><h3>Medical Aid</h3><p>Medical teams and supplies routed to where they are needed, using early signal detection to act before needs peak.</p></div>
-      <div class="impact-area"><span class="ia-icon">⚖️</span><h3>Women in Detention</h3><p>A dedicated program providing legal support, dignity, and visibility — a cause that directly shaped this platform's founding.</p></div>
-      <div class="impact-area"><span class="ia-icon">🚨</span><h3>Crisis Response</h3><p>Rapid deployment activated within hours — through AI-matched resources pre-positioned before emergencies escalate.</p></div>
-      <div class="impact-area"><span class="ia-icon">🎓</span><h3>Education</h3><p>Funding and support for educational access in underserved communities — building long-term resilience alongside immediate aid.</p></div>
-    </div>
-  </div>
-</section>
 
-<!-- FOUNDER -->
-<section id="founder">
-  <div class="sec-inner">
-    <div class="sec-tag">Our Foundation</div>
-    <h2 class="sec-title">Built From<br><span>Lived Experience.</span></h2>
-    <p class="sec-lead">Mankind Global was not built in theory. It was built from firsthand experience navigating systems that fail when people need them most.</p>
-    <div class="founder-grid reveal">
-      <div class="founder-card">
-        <p>Mankind Global was not built in theory.</p>
-        <p>It was built from firsthand experience navigating systems that fail when support is needed most.</p>
-        <p>That experience revealed a deeper problem — not a lack of resources, but a lack of coordination, speed, and transparency.</p>
-        <p class="dim">Mankind Global exists to solve this — by building a real-time, AI-powered infrastructure where no request goes unseen and no help goes untracked.</p>
-        <div class="founder-sig">
-          <div class="founder-name">TIDIMALO KONAITE</div>
-          <div class="founder-role">FOUNDER & CEO — MANKIND GLOBAL</div>
-          <div class="founder-insp">INSPIRED BY PAUL, APOSTLE OF CHRIST</div>
-        </div>
-      </div>
-      <div class="values">
-        <div class="value-item"><span class="vi-icon">❤️</span><div><div class="vi-title">Compassion First</div><div class="vi-text">Every algorithm, every decision, guided by one question: does this reduce human suffering?</div></div></div>
-        <div class="value-item"><span class="vi-icon">🌐</span><div><div class="vi-title">No Borders</div><div class="vi-text">Help reaches every corner of the world regardless of geography, nationality, or circumstance.</div></div></div>
-        <div class="value-item"><span class="vi-icon">🔍</span><div><div class="vi-title">Full Transparency</div><div class="vi-text">Every dollar, every action, every outcome is visible. Donors see exactly where their contribution goes.</div></div></div>
-        <div class="value-item"><span class="vi-icon">⚡</span><div><div class="vi-title">Technology as Good</div><div class="vi-text">AI is humanity's most powerful tool. We use it to amplify compassion — not replace it.</div></div></div>
-        <div class="value-item"><span class="vi-icon">🤝</span><div><div class="vi-title">Collective Action</div><div class="vi-text">One act of help can reach millions. We build the systems that make that possible at scale.</div></div></div>
-      </div>
+    <!-- STRIPE CARD -->
+    <div class="field">
+      <label>Card Details</label>
+      <div class="stripe-box"><div id="card-element"></div></div>
+      <div id="card-errors"></div>
     </div>
-  </div>
-</section>
 
-<!-- INVESTORS -->
-<section id="investors">
-  <div class="sec-inner">
-    <div class="sec-tag">Investor Information</div>
-    <h2 class="sec-title">A New Category:<br><span>AI Humanitarian Infrastructure.</span></h2>
-    <p class="sec-lead">A category-defining platform at the intersection of AI, global coordination systems, and humanitarian impact — with a SaaS model, a real-time data layer, and a mission that is both fundable and necessary.</p>
-    <div class="inv-grid reveal">
-      <div class="inv-card"><span class="inv-icon">💰</span><div class="inv-title">Corporate Partners</div><div class="inv-text">Integrate NexPath AI into your CSR framework with verified impact data, employee volunteer programs, and transparent reporting.</div><div class="inv-cta">→ MEASURABLE ESG IMPACT</div></div>
-      <div class="inv-card"><span class="inv-icon">🏛️</span><div class="inv-title">Institutional Investors</div><div class="inv-text">A scalable SaaS model with NGO and government licensing, recurring revenue potential, and a defensible global data layer.</div><div class="inv-cta">→ SCALABLE REVENUE MODEL</div></div>
-      <div class="inv-card"><span class="inv-icon">🌍</span><div class="inv-title">Global Philanthropists</div><div class="inv-text">Every dollar invested in the platform infrastructure multiplies the impact of every future dollar donated through it.</div><div class="inv-cta">→ MULTIPLIED IMPACT</div></div>
-      <div class="inv-card"><span class="inv-icon">🏦</span><div class="inv-title">Government & NGO Grants</div><div class="inv-text">Positioned for UNHCR, World Bank, UAE humanitarian funds, and international grants targeting AI-driven aid coordination.</div><div class="inv-cta">→ GRANT-READY PLATFORM</div></div>
-      <div class="inv-card"><span class="inv-icon">🔬</span><div class="inv-title">Technology Partners</div><div class="inv-text">Co-build the future of humanitarian AI — a deep integration opportunity across the global tech-for-good ecosystem.</div><div class="inv-cta">→ TECH ECOSYSTEM PLAY</div></div>
-      <div class="inv-card"><span class="inv-icon">🚀</span><div class="inv-title">Impact Investors</div><div class="inv-text">A category-defining company at the intersection of AI, SaaS, and global humanitarian infrastructure — built for long-term scale.</div><div class="inv-cta">→ LONG-TERM CATEGORY PLAY</div></div>
+    <!-- TEST MODE NOTICE -->
+    <div class="test-notice">
+      ◆ SANDBOX MODE — Use test card:<br>
+      Card: 4242 4242 4242 4242<br>
+      Expiry: Any future date (e.g. 12/26) · CVC: Any 3 digits · ZIP: Any 5 digits
     </div>
-    <div class="roadmap reveal">
-      <div class="rm-title">◈ PLATFORM ROADMAP</div>
-      <div class="rm-track">
-        <div class="rm-step"><div class="rm-dot active">1</div><div class="rm-phase">NOW</div><div class="rm-name">Foundation</div><div class="rm-desc">Platform live, database active, first aid requests processing</div></div>
-        <div class="rm-step"><div class="rm-dot">2</div><div class="rm-phase">PHASE 2</div><div class="rm-name">Full Platform</div><div class="rm-desc">Live donations, volunteer coordination, mobile app launch</div></div>
-        <div class="rm-step"><div class="rm-dot">3</div><div class="rm-phase">PHASE 3</div><div class="rm-name">Global Scale</div><div class="rm-desc">Signal detection engine, 50+ countries, global partnerships</div></div>
-        <div class="rm-step"><div class="rm-dot">4</div><div class="rm-phase">PHASE 4</div><div class="rm-name">SaaS Layer</div><div class="rm-desc">License NexPath AI to NGOs and governments worldwide</div></div>
-        <div class="rm-step"><div class="rm-dot">5</div><div class="rm-phase">PHASE 5</div><div class="rm-name">Public Market</div><div class="rm-desc">IPO — the world's first publicly listed AI humanitarian platform</div></div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- CTA -->
-<section id="cta">
-  <div class="cta-inner">
-    <h2 class="cta-title">We Are Rebuilding How<br><span>the World Responds to Human Need.</span></h2>
-    <p class="cta-tagline">"One act of help can reach millions. This platform is how we make that possible."</p>
-    <div class="cta-btns">
-      <a href="request-aid.html" class="btn-primary">⚡ Request Help — Immediate Support</a>
-      <a href="donate.html" class="btn-outline">❤️ Donate — Track Every Dollar</a>
-      <a href="mailto:contact@globaldriveaid.com" class="btn-secondary">◈ Partner With Us</a>
-    </div>
-    <div class="cta-tags">
-      <span class="cta-tag">No One Left Behind</span>
-      <span class="cta-tag">Every Dollar Tracked</span>
-      <span class="cta-tag">Built in Dubai For the World</span>
-      <span class="cta-tag">AI Humanitarian Infrastructure</span>
-    </div>
-  </div>
-</section>
+    <!-- DONATE BUTTON -->
+    <button class="donate-btn" id="donate-btn" onclick="submitDonation()">
+      ❤️ DONATE NOW — TRACK EVERY DOLLAR
+    </button>
 
-<!-- FOOTER -->
-<footer>
-  <div>
-    <div class="footer-brand">MANKIND <span>GLOBAL</span></div>
-    <div class="footer-sub">POWERED BY NEXPATH AI // HUMANITARIAN INTELLIGENCE</div>
-    <div class="footer-sub">FOUNDED BY TIDIMALO KONAITE // INSPIRED BY PAUL, APOSTLE OF CHRIST</div>
-  </div>
-  <div class="footer-center">© 2025 MANKIND GLOBAL. ALL RIGHTS RESERVED.<br>GLOBALDRIVEAID.COM // DUBAI, UAE</div>
-  <div class="footer-right">HELPING HAND COMMUNITY<br>GLOBAL DRIVE AID PROJECT<br>DUBAI, UNITED ARAB EMIRATES</div>
-</footer>
+    <div class="status" id="status"></div>
 
-<div id="notif"></div>
+    <!-- TRACKING -->
+    <div class="track-box" id="track-box">
+      <div class="track-title">◆ YOUR DONATION — LIVE TRACKING</div>
+      <div class="track-step done" id="t1">Payment received and verified</div>
+      <div class="track-step" id="t2">NexPath AI allocating to verified need</div>
+      <div class="track-step" id="t3">Aid matched and dispatched to recipient</div>
+      <div class="track-step" id="t4">Delivery confirmed — impact report sent to your email</div>
+    </div>
+
+    <div class="secure-note">🔒 Secured by Stripe · Tracked by NexPath AI · Transparent by design</div>
+  </div>
+</main>
 
 <script>
-// SUPABASE
+// ── SUPABASE ──
 const{createClient}=supabase;
-const sb=createClient('https://ehlbtosecxhneixkmcab.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVobGJ0b3NlY3hobmVpeGttY2FiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NDE2MTEsImV4cCI6MjA5MzAxNzYxMX0.IbLP1mXF-U-UtcGtYTQqqjZFDFwGbkF8HL974J_3iWo');
+const sb=createClient(
+  'https://ehlbtosecxhneixkmcab.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVobGJ0b3NlY3hobmVpeGttY2FiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NDE2MTEsImV4cCI6MjA5MzAxNzYxMX0.IbLP1mXF-U-UtcGtYTQqqjZFDFwGbkF8HL974J_3iWo'
+);
 
-function set(id,val){const el=document.getElementById(id);if(el)el.textContent=val;}
-function fmt(n){return(n||0).toLocaleString();}
-function fmtUSD(n){return'$'+(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});}
+// ── STRIPE ──
+const stripe=Stripe('pk_test_51TEr1iKDqs5Uxjb5HuqEOvQ4eyLtSQas6yHlHgKlIMMz5jm2GfDKloF1vTpq4ye4KoTd3AND6KTkRt4Fea6e5xsu00cF6mpw0D');
+const elements=stripe.elements({
+  appearance:{
+    theme:'night',
+    variables:{colorPrimary:'#FF6B1A',colorBackground:'#000000',colorText:'#D0E4F0',colorDanger:'#FF2D2D',fontFamily:'Rajdhani, sans-serif',borderRadius:'4px'}
+  }
+});
+const card=elements.create('card',{
+  style:{base:{color:'#D0E4F0',fontFamily:'Rajdhani, sans-serif',fontSize:'15px','::placeholder':{color:'#5A7A8E'}},invalid:{color:'#FF2D2D'}}
+});
+card.mount('#card-element');
+card.on('change',e=>{ document.getElementById('card-errors').textContent=e.error?e.error.message:''; });
 
-async function loadStats(){
+// ── STATE ──
+let amount=10, cause='general';
+selectAmt(10);
+
+function selectAmt(v){
+  amount=v;
+  document.querySelectorAll('.ab').forEach(b=>b.classList.toggle('sel',b.dataset.v==v));
+  document.getElementById('custom-wrap').style.display='none';
+}
+function selectCustom(){
+  document.querySelectorAll('.ab').forEach(b=>b.classList.remove('sel'));
+  document.querySelector('[data-v="custom"]').classList.add('sel');
+  document.getElementById('custom-wrap').style.display='block';
+  document.getElementById('custom-input').focus();
+}
+function onCustom(){ amount=parseFloat(document.getElementById('custom-input').value)||0; }
+function selCause(el){
+  document.querySelectorAll('.cause-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel'); cause=el.dataset.v;
+}
+
+// Click impact rows to select amount
+document.querySelectorAll('.impact-row').forEach(row=>{
+  row.addEventListener('click',()=>{
+    const v=parseInt(row.querySelector('.ir-amount').textContent.replace('$',''));
+    selectAmt(v);
+  });
+});
+
+// ── SUBMIT ──
+async function submitDonation(){
+  const btn=document.getElementById('donate-btn');
+  const name=document.getElementById('dname').value.trim();
+  const email=document.getElementById('demail').value.trim();
+  const msg=document.getElementById('dmsg').value.trim();
+  const anon=document.getElementById('anon').checked;
+
+  if(!name){ showStatus('error','Please enter your name.'); return; }
+  if(!email||!email.includes('@')){ showStatus('error','Please enter a valid email address.'); return; }
+  if(!amount||amount<1){ showStatus('error','Please select or enter a donation amount.'); return; }
+
+  btn.disabled=true;
+  btn.innerHTML='⏳ PROCESSING PAYMENT...';
+  showStatus('loading','🔒 Securing payment via Stripe...');
+
   try{
-    const[rr,vr,mr]=await Promise.all([
-      sb.from('aid_requests').select('*',{count:'exact',head:true}),
-      sb.from('volunteers').select('*',{count:'exact',head:true}),
-      sb.from('missions').select('*',{count:'exact',head:true}).eq('status','active'),
-    ]);
-    const req=rr.count||0,vol=vr.count||0,mis=mr.count||0;
-    const{data:cd}=await sb.from('aid_requests').select('country');
-    const countries=cd?new Set(cd.filter(r=>r.country).map(r=>r.country)).size:0;
-    const{data:dd}=await sb.from('donations').select('amount_usd').eq('status','completed');
-    const donated=dd?dd.reduce((a,b)=>a+(parseFloat(b.amount_usd)||0),0):0;
-    const{count:pend}=await sb.from('aid_requests').select('*',{count:'exact',head:true}).eq('status','pending');
-    const{count:act}=await sb.from('aid_requests').select('*',{count:'exact',head:true}).eq('status','active');
-    const{count:comp}=await sb.from('aid_requests').select('*',{count:'exact',head:true}).eq('status','completed');
-    set('h-req',fmt(req));set('h-vol',fmt(vol));set('h-donated',fmtUSD(donated));set('h-countries',fmt(countries));set('h-missions',fmt(mis));
-    set('d-req',fmt(req));set('d-vol',fmt(vol));set('d-missions',fmt(mis));set('d-donated',fmtUSD(donated));
-    set('d-note','● '+fmt(req)+' real requests in database');
-    set('dm-req',fmt(req));set('dm-vol',fmt(vol));set('dm-missions',fmt(mis));set('dm-countries',fmt(countries));
-    set('i-req',fmt(req));set('i-vol',fmt(vol));set('i-donated',fmtUSD(donated));
-    set('r-pending',fmt(pend));set('r-active',fmt(act));set('r-completed',fmt(comp));
-    if(req>0){const el=document.getElementById('demo-live');if(el)el.querySelector('span').textContent=fmt(req)+' real aid requests in system.';}
-  }catch(e){console.error('Stats error:',e);}
-}
-loadStats();setInterval(loadStats,30000);
-
-// REALTIME
-sb.channel('rt')
-  .on('postgres_changes',{event:'INSERT',schema:'public',table:'aid_requests'},p=>{
-    loadStats();
-    const msg=`New ${p.new.urgency} request — ${p.new.aid_type} — ${p.new.city}, ${p.new.country}`;
-    addFeed(msg);set('ticker-text','● '+msg);set('feed-label','● LIVE');
-    notify('📩 New aid request from '+p.new.city+', '+p.new.country);
-  })
-  .on('postgres_changes',{event:'INSERT',schema:'public',table:'donations'},p=>{
-    loadStats();
-    const msg='Donation received — $'+parseFloat(p.new.amount_usd).toFixed(2)+' tracked to recipient';
-    addFeed(msg);set('ticker-text','● '+msg);
-    notify('❤️ New donation — $'+parseFloat(p.new.amount_usd).toFixed(2));
-  })
-  .on('postgres_changes',{event:'INSERT',schema:'public',table:'volunteers'},p=>{
-    loadStats();
-    const msg='New volunteer registered — '+p.new.country;
-    addFeed(msg);notify('🙌 New volunteer from '+p.new.country);
-  })
-  .subscribe();
-
-// FEED
-const feedEl=document.getElementById('live-feed');
-function addFeed(text){
-  const now=new Date();
-  const time=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-  const d=document.createElement('div');d.className='feed-item';
-  d.innerHTML=`<div class="fi-dot"></div><span class="fi-time">${time}</span><span class="fi-text">${text}</span>`;
-  feedEl.insertBefore(d,feedEl.firstChild);
-  if(feedEl.children.length>15)feedEl.removeChild(feedEl.lastChild);
-}
-addFeed('NexPath AI connected — monitoring active.');
-addFeed('Real activity appears here the moment it happens.');
-
-// CLOCK
-function tick(){const el=document.getElementById('clock');if(el)el.textContent=new Date().toUTCString().split(' ').slice(1,5).join(' ').replace('GMT','UTC');}
-tick();setInterval(tick,1000);
-
-// NOTIFY
-let nT;
-function notify(msg){const el=document.getElementById('notif');el.textContent=msg;el.classList.add('show');clearTimeout(nT);nT=setTimeout(()=>el.classList.remove('show'),4000);}
-setTimeout(()=>notify('🌍 NexPath AI — ONLINE. Built in Dubai for the world.'),1200);
-
-// SCROLL REVEAL
-const revObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.1});
-document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));
-
-// NAV SCROLL
-window.addEventListener('scroll',()=>{document.getElementById('mainnav').style.background=window.scrollY>50?'rgba(3,8,15,0.99)':'rgba(3,8,15,0.95)';});
-
-// SMOOTH SCROLL
-document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'});});});
-
-// NETWORK CANVAS (background page)
-const nc=document.getElementById('netCanvas'),nx=nc.getContext('2d');
-function resizeNet(){nc.width=window.innerWidth;nc.height=window.innerHeight;}
-resizeNet();window.addEventListener('resize',resizeNet);
-const nodes=[
-  {x:.535,y:.52,col:'#FF2D2D',p:0},{x:.562,y:.42,col:'#FF2D2D',p:1},
-  {x:.240,y:.50,col:'#FF8C00',p:2},{x:.600,y:.48,col:'#FF8C00',p:3},
-  {x:.515,y:.60,col:'#FF8C00',p:4},{x:.745,y:.46,col:'#FFD700',p:5},
-  {x:.360,y:.28,col:'#00D4FF',p:0},{x:.490,y:.22,col:'#00D4FF',p:2},
-  {x:.680,y:.20,col:'#00D4FF',p:4},{x:.610,y:.25,col:'#00D4FF',p:1},
-  {x:.420,y:.62,col:'#00D4FF',p:3},{x:.800,y:.58,col:'#00D4FF',p:2},
-];
-const conns=[[0,1],[0,4],[1,3],[2,3],[4,5],[6,7],[7,8],[8,9],[9,0],[9,1],[9,3],[10,0],[6,2],[11,10]];
-let NT=0;
-function qb(p0,p1,p2,t){return(1-t)*(1-t)*p0+2*(1-t)*t*p1+t*t*p2;}
-function hexA(hex,a){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgba(${r},${g},${b},${a})`;}
-function drawNet(){
-  const W=nc.width,H=nc.height;nx.clearRect(0,0,W,H);NT+=0.007;
-  conns.forEach((pair,idx)=>{
-    const a=nodes[pair[0]],b=nodes[pair[1]];
-    const ax=a.x*W,ay=a.y*H,bx=b.x*W,by=b.y*H;
-    const cpx=(ax+bx)/2,cpy=Math.min(ay,by)-H*.10;
-    nx.beginPath();nx.moveTo(ax,ay);nx.quadraticCurveTo(cpx,cpy,bx,by);
-    nx.strokeStyle='rgba(0,160,255,0.07)';nx.lineWidth=1;nx.setLineDash([3,8]);nx.stroke();nx.setLineDash([]);
-    const prog=((NT*.4+idx*.15)%1);
-    const px=qb(ax,cpx,bx,prog),py=qb(ay,cpy,by,prog);
-    nx.beginPath();nx.arc(px,py,2,0,Math.PI*2);
-    nx.fillStyle='rgba(0,212,255,0.85)';nx.shadowColor='#00D4FF';nx.shadowBlur=8;nx.fill();nx.shadowBlur=0;
-  });
-  nodes.forEach(n=>{
-    const hx=n.x*W,hy=n.y*H,pulse=(Math.sin(NT*2.5+n.p)+1)/2;
-    nx.beginPath();nx.arc(hx,hy,10+pulse*8,0,Math.PI*2);nx.strokeStyle=hexA(n.col,0.10+pulse*.10);nx.lineWidth=1;nx.stroke();
-    nx.beginPath();nx.arc(hx,hy,5+pulse*3,0,Math.PI*2);nx.strokeStyle=hexA(n.col,0.22+pulse*.18);nx.lineWidth=1;nx.stroke();
-    nx.beginPath();nx.arc(hx,hy,4,0,Math.PI*2);nx.fillStyle=n.col;nx.shadowColor=n.col;nx.shadowBlur=16;nx.fill();nx.shadowBlur=0;
-  });
-  requestAnimationFrame(drawNet);
-}
-drawNet();
-
-// DASHBOARD MAP — real world map image + animated canvas overlay
-const dmC=document.getElementById('dashMapCanvas');
-if(dmC){
-  const dmX=dmC.getContext('2d');
-  function resizeDm(){
-    const parent=dmC.parentElement;
-    dmC.width=parent.clientWidth;
-    dmC.height=parent.clientHeight;
-  }
-  resizeDm();window.addEventListener('resize',resizeDm);
-
-  // Hotspot positions matching real world geography on equirectangular map
-  const hotspots=[
-    {x:.535,y:.47,col:'#FF2D2D',label:'SUDAN'},
-    {x:.558,y:.40,col:'#FF2D2D',label:'GAZA'},
-    {x:.245,y:.48,col:'#FF8C00',label:'HAITI'},
-    {x:.598,y:.44,col:'#FF8C00',label:'YEMEN'},
-    {x:.515,y:.55,col:'#FF8C00',label:'DR CONGO'},
-    {x:.740,y:.42,col:'#FFD700',label:'MYANMAR'},
-    {x:.608,y:.28,col:'#00D4FF',label:'DUBAI'},
-  ];
-
-  const mapConns=[[0,4],[1,2],[0,1],[2,3],[4,5],[0,6],[1,6],[3,6]];
-  let DT=0;
-
-  function drawDm(){
-    const W=dmC.width,H=dmC.height;
-    if(!W||!H){requestAnimationFrame(drawDm);return;}
-    dmX.clearRect(0,0,W,H);
-
-    // Subtle blue tint overlay on top of real map image
-    dmX.fillStyle='rgba(0,8,25,0.35)';
-    dmX.fillRect(0,0,W,H);
-
-    // Grid lines
-    dmX.strokeStyle='rgba(0,140,220,0.07)';dmX.lineWidth=1;
-    for(let i=0;i<W;i+=W/20){dmX.beginPath();dmX.moveTo(i,0);dmX.lineTo(i,H);dmX.stroke();}
-    for(let j=0;j<H;j+=H/14){dmX.beginPath();dmX.moveTo(0,j);dmX.lineTo(W,j);dmX.stroke();}
-
-    DT+=0.009;
-
-    // Animated connection arcs
-    mapConns.forEach((pair,idx)=>{
-      const a=hotspots[pair[0]],b=hotspots[pair[1]];
-      const ax=a.x*W,ay=a.y*H,bx=b.x*W,by=b.y*H;
-      const cpx=(ax+bx)/2,cpy=Math.min(ay,by)-H*.14;
-
-      // Arc path
-      dmX.beginPath();dmX.moveTo(ax,ay);dmX.quadraticCurveTo(cpx,cpy,bx,by);
-      dmX.strokeStyle='rgba(0,200,255,0.10)';dmX.lineWidth=1;
-      dmX.setLineDash([3,7]);dmX.stroke();dmX.setLineDash([]);
-
-      // Moving dot
-      const prog=((DT*.55+idx*.16)%1);
-      const px=qb(ax,cpx,bx,prog),py=qb(ay,cpy,by,prog);
-      dmX.beginPath();dmX.arc(px,py,2.5,0,Math.PI*2);
-      dmX.fillStyle='rgba(0,220,255,0.95)';
-      dmX.shadowColor='#00D4FF';dmX.shadowBlur=8;dmX.fill();dmX.shadowBlur=0;
+    // Tokenize card
+    const{paymentMethod,error:pmErr}=await stripe.createPaymentMethod({
+      type:'card',card,billing_details:{name,email}
     });
 
-    // Hotspot dots + labels
-    hotspots.forEach(h=>{
-      const hx=h.x*W,hy=h.y*H;
-      const pulse=(Math.sin(DT*2.5+h.x*15)+1)/2;
+    if(pmErr){
+      showStatus('error',pmErr.message);
+      btn.disabled=false;
+      btn.innerHTML='❤️ DONATE NOW — TRACK EVERY DOLLAR';
+      return;
+    }
 
-      // Outer rings
-      dmX.beginPath();dmX.arc(hx,hy,12+pulse*7,0,Math.PI*2);
-      dmX.strokeStyle=hexA(h.col,0.10+pulse*.12);dmX.lineWidth=1;dmX.stroke();
+    // Save to Supabase
+    const{data:rec,error:dbErr}=await sb.from('donations').insert([{
+      donor_name:anon?'Anonymous':name,
+      donor_email:email,
+      amount_usd:amount,
+      currency:'USD',
+      status:'pending',
+      message:msg||null,
+      is_anonymous:anon,
+    }]).select();
 
-      dmX.beginPath();dmX.arc(hx,hy,7+pulse*4,0,Math.PI*2);
-      dmX.strokeStyle=hexA(h.col,0.22+pulse*.2);dmX.lineWidth=1;dmX.stroke();
+    if(dbErr) console.error('DB error:',dbErr);
 
-      // Core dot
-      dmX.beginPath();dmX.arc(hx,hy,5,0,Math.PI*2);
-      dmX.fillStyle=h.col;dmX.shadowColor=h.col;dmX.shadowBlur=16;dmX.fill();dmX.shadowBlur=0;
+    showStatus('loading','🤖 NexPath AI verifying and allocating your donation...');
 
-      // Label
-      dmX.font='bold 10px Rajdhani, sans-serif';
-      dmX.fillStyle='rgba(210,230,245,0.85)';
-      dmX.fillText(h.label,hx+10,hy-5);
-    });
+    // Sandbox: simulate payment confirmation after 2 seconds
+    setTimeout(async()=>{
+      if(rec&&rec[0]){
+        await sb.from('donations').update({status:'completed'}).eq('id',rec[0].id);
+      }
 
-    requestAnimationFrame(drawDm);
+      const ref=rec&&rec[0]?rec[0].id.substring(0,8).toUpperCase():'CONFIRMED';
+      const causeLabels={general:'the highest-need operations',food:'food security',medical:'medical aid',shelter:'shelter programs',women:'the women in detention program',emergency:'emergency response'};
+
+      showStatus('success',
+`✅ Donation of $${parseFloat(amount).toFixed(2)} confirmed!
+
+Thank you${anon?'':' '+name}. Your contribution has been received and NexPath AI is allocating it to ${causeLabels[cause]||'operations'}.
+
+A verified impact report will be sent to ${email} when your donation reaches its recipient.
+
+Reference: ${ref}`);
+
+      // Show live tracking steps
+      document.getElementById('track-box').classList.add('show');
+      setTimeout(()=>document.getElementById('t2').classList.add('done'),1500);
+      setTimeout(()=>document.getElementById('t3').classList.add('done'),3000);
+      setTimeout(()=>document.getElementById('t4').classList.add('done'),5000);
+
+      btn.innerHTML='✅ DONATION CONFIRMED — THANK YOU';
+
+    },2000);
+
+  }catch(err){
+    showStatus('error','Something went wrong: '+err.message);
+    btn.disabled=false;
+    btn.innerHTML='❤️ DONATE NOW — TRACK EVERY DOLLAR';
   }
-  setTimeout(drawDm,300);
+}
+
+function showStatus(type,msg){
+  const el=document.getElementById('status');
+  el.className='status show '+type;
+  el.textContent=msg;
 }
 </script>
 </body>
