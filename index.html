@@ -3,17 +3,29 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="Mankind Global — An AI-powered humanitarian platform connecting aid requests, donors, and volunteers in real time with full transparency."/>
 <title>Mankind Global — Powered by NexPath AI</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--orange:#FF6B1A;--orange2:#FF8C42;--blue:#00D4FF;--bg:#03080F;--bg2:#060E1A;--border:rgba(0,180,255,0.13);--border-o:rgba(255,107,26,0.28);--text:#D0E4F0;--text2:#5A7A8E;--white:#fff;--green:#00FF88;--critical:#FF2D2D;--high:#FF8C00;--moderate:#FFD700;}
-*{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+:root{
+  --orange:#FF6B1A;--orange2:#FF8C42;--blue:#00D4FF;
+  --bg:#03080F;--bg2:#060E1A;
+  --border:rgba(0,180,255,0.13);--border-o:rgba(255,107,26,0.28);
+  --text:#D0E4F0;--text2:#5A7A8E;--white:#fff;
+  --green:#00FF88;--critical:#FF2D2D;--high:#FF8C00;--moderate:#FFD700;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;overflow-x:hidden;}
+
+/* WORLD MAP BG */
 #world-bg{position:fixed;inset:0;z-index:0;background-image:url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/1280px-Equirectangular_projection_SW.jpg');background-size:cover;background-position:center;opacity:0.13;filter:saturate(0) brightness(1.4) invert(1) sepia(1) saturate(3) hue-rotate(180deg);}
 #world-overlay{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse at 50% 30%,rgba(0,40,100,0.55) 0%,transparent 65%),linear-gradient(180deg,rgba(3,8,15,0.82) 0%,rgba(3,8,15,0.58) 40%,rgba(3,8,15,0.82) 100%);}
 #netCanvas{position:fixed;inset:0;z-index:0;width:100%;height:100%;}
 .scanlines{position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.03) 3px,rgba(0,0,0,0.03) 4px);}
+
+/* NAV */
 nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 40px;height:60px;background:rgba(3,8,15,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);transition:all .3s;}
 .nav-brand{display:flex;align-items:center;gap:12px;text-decoration:none;}
 .nav-logo{width:38px;height:38px;border-radius:50%;border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:900;color:var(--orange);animation:logoPulse 3s ease-in-out infinite;}
@@ -24,9 +36,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:cen
 .nav-links a{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;color:var(--text2);text-decoration:none;text-transform:uppercase;transition:color .2s;}
 .nav-links a:hover{color:var(--orange);}
 .nav-cta{background:var(--orange)!important;color:var(--white)!important;padding:8px 16px;border-radius:3px;font-family:'Orbitron',sans-serif!important;font-size:9px!important;font-weight:700!important;letter-spacing:2px!important;box-shadow:0 0 20px rgba(255,107,26,0.3);transition:all .2s!important;}
+.nav-cta:hover{box-shadow:0 0 35px rgba(255,107,26,0.5)!important;transform:translateY(-1px);}
 .nav-status{display:flex;align-items:center;gap:6px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--green);}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 1.8s infinite;}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.15;}}
+
+/* HERO */
 #hero{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 40px 60px;}
 .hero-tag{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:4px;color:var(--blue);margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:12px;animation:fadeUp .8s .3s ease both;}
 .hero-tag::before,.hero-tag::after{content:'';width:36px;height:1px;}
@@ -37,17 +52,21 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:cen
 .hero-title span{color:var(--orange);display:block;text-shadow:0 0 60px rgba(255,107,26,0.25);}
 .hero-serif{font-family:'Cormorant Garamond',serif;font-size:clamp(16px,2vw,24px);font-weight:300;font-style:italic;color:var(--blue);letter-spacing:1px;margin-bottom:18px;animation:fadeUp .8s .7s ease both;}
 .hero-tagline{font-family:'Orbitron',sans-serif;font-size:clamp(10px,1.2vw,13px);font-weight:600;color:var(--orange);letter-spacing:2px;text-transform:uppercase;margin-bottom:26px;animation:fadeUp .8s .8s ease both;border:1px solid var(--border-o);display:inline-block;padding:8px 20px;border-radius:2px;background:rgba(255,107,26,0.06);}
-.hero-desc{max-width:620px;font-size:17px;color:var(--text2);line-height:1.75;margin:0 auto 40px;animation:fadeUp .8s .9s ease both;}
+.hero-desc{max-width:640px;font-size:17px;color:var(--text2);line-height:1.8;margin:0 auto 40px;animation:fadeUp .8s .9s ease both;}
 .hero-desc strong{color:var(--text);}
+.hero-flow{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:36px;animation:fadeUp .8s 1.0s ease both;flex-wrap:wrap;}
+.flow-step{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);letter-spacing:1px;padding:6px 12px;border:1px solid var(--border);border-radius:2px;background:rgba(0,0,0,0.3);}
+.flow-step span{color:var(--orange);}
+.flow-arrow{color:var(--orange);font-size:14px;}
 .hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:48px;animation:fadeUp .8s 1.1s ease both;}
-.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--orange);color:var(--white);padding:14px 28px;border-radius:3px;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;transition:all .25s;box-shadow:0 0 28px rgba(255,107,26,0.3);}
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--orange);color:var(--white);padding:14px 28px;border-radius:3px;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;transition:all .25s;box-shadow:0 0 28px rgba(255,107,26,0.3);}
 .btn-primary:hover{background:var(--orange2);box-shadow:0 0 45px rgba(255,107,26,0.5);transform:translateY(-2px);}
-.btn-outline{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--orange);padding:13px 28px;border-radius:3px;border:1px solid var(--orange);font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:all .25s;}
+.btn-outline{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--orange);padding:13px 28px;border-radius:3px;border:1px solid var(--orange);font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:all .25s;}
 .btn-outline:hover{background:rgba(255,107,26,0.08);transform:translateY(-2px);}
-.btn-secondary{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--blue);padding:13px 28px;border-radius:3px;border:1px solid rgba(0,212,255,0.3);font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:all .25s;}
+.btn-secondary{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--blue);padding:13px 28px;border-radius:3px;border:1px solid rgba(0,212,255,0.3);font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-decoration:none;cursor:pointer;transition:all .25s;}
 .btn-secondary:hover{background:rgba(0,212,255,0.07);box-shadow:0 0 28px rgba(0,212,255,0.2);transform:translateY(-2px);}
 .stats-bar{display:flex;border:1px solid var(--border);border-radius:4px;overflow:hidden;background:rgba(3,8,15,0.88);backdrop-filter:blur(16px);animation:fadeUp .8s 1.3s ease both;}
-.stat-item{padding:16px 24px;border-right:1px solid var(--border);text-align:center;transition:background .2s;position:relative;}
+.stat-item{padding:16px 24px;border-right:1px solid var(--border);text-align:center;position:relative;transition:background .2s;}
 .stat-item:last-child{border-right:none;}
 .stat-item:hover{background:rgba(255,107,26,0.05);}
 .stat-num{font-family:'Orbitron',sans-serif;font-size:22px;font-weight:900;color:var(--orange);line-height:1;margin-bottom:3px;}
@@ -56,6 +75,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:cen
 .scroll-cue{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:6px;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:2px;animation:fadeUp 1s 2s ease both;}
 .scroll-line{width:1px;height:36px;background:linear-gradient(180deg,var(--orange),transparent);animation:scrollDrop 2s ease-in-out infinite;}
 @keyframes scrollDrop{0%{transform:scaleY(0);transform-origin:top;}50%{transform:scaleY(1);transform-origin:top;}51%{transform-origin:bottom;}100%{transform:scaleY(0);transform-origin:bottom;}}
+
+/* DASHBOARD */
 #live-dashboard{position:relative;z-index:10;}
 .dash-wrap{background:rgba(2,6,12,0.97);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
 .dash-topbar{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;background:rgba(0,0,0,0.5);border-bottom:1px solid var(--border);}
@@ -98,22 +119,42 @@ nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:cen
 .cn-o{color:var(--orange);}.cn-b{color:var(--blue);}.cn-g{color:var(--green);}.cn-r{color:var(--critical);}
 .engine-row{display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:9px;margin-bottom:6px;}
 .engine-lbl{color:var(--text2);}.engine-val{color:var(--green);}
+
+/* SECTIONS */
 section{position:relative;z-index:10;padding:90px 40px;}
 .sec-inner{max-width:1160px;margin:0 auto;}
 .sec-tag{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:3px;color:var(--orange);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
 .sec-tag::before{content:'';width:28px;height:1px;background:var(--orange);}
 .sec-title{font-family:'Orbitron',sans-serif;font-size:clamp(30px,4vw,50px);font-weight:800;color:var(--white);line-height:1.1;margin-bottom:14px;}
 .sec-title span{color:var(--orange);}
-.sec-lead{font-size:17px;color:var(--text2);line-height:1.7;max-width:580px;margin-bottom:56px;}
+.sec-lead{font-size:17px;color:var(--text2);line-height:1.7;max-width:620px;margin-bottom:56px;}
+
+/* PROBLEM */
 #problem{background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);}
-.problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:48px;}
+.problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:40px;}
 .prob-card{background:var(--bg2);padding:32px 26px;transition:background .3s;position:relative;overflow:hidden;}
 .prob-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--critical),transparent);transform:scaleX(0);transform-origin:left;transition:transform .4s;}
 .prob-card:hover{background:rgba(255,45,45,0.04);}.prob-card:hover::before{transform:scaleX(1);}
 .prob-icon{font-size:28px;margin-bottom:12px;display:block;}
 .prob-card h3{font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;color:var(--white);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase;}
 .prob-card p{font-size:14px;color:var(--text2);line-height:1.6;}
-#solution{background:var(--bg);}
+.problem-conclusion{text-align:center;padding:28px 40px;border:1px solid var(--border-o);border-radius:4px;background:rgba(255,107,26,0.04);}
+.problem-conclusion p{font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;color:var(--white);line-height:1.6;}
+.problem-conclusion span{color:var(--orange);}
+
+/* HOW IT WORKS */
+#how{background:var(--bg);}
+.how-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:0;position:relative;margin-bottom:48px;}
+.how-steps::before{content:'';position:absolute;top:36px;left:10%;right:10%;height:1px;background:linear-gradient(90deg,var(--orange),var(--blue));z-index:0;}
+.how-step{text-align:center;position:relative;z-index:1;padding:0 12px;}
+.how-num{width:72px;height:72px;border-radius:50%;background:var(--bg);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-family:'Orbitron',sans-serif;font-size:20px;font-weight:900;color:var(--orange);box-shadow:0 0 20px rgba(255,107,26,0.2);}
+.how-title{font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;color:var(--white);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase;}
+.how-desc{font-size:13px;color:var(--text2);line-height:1.5;}
+.how-conclusion{text-align:center;padding:24px;background:rgba(0,212,255,0.04);border:1px solid var(--border);border-radius:4px;}
+.how-conclusion p{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--blue);letter-spacing:2px;}
+
+/* SOLUTION */
+#solution{background:var(--bg2);}
 .sol-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
 .sol-features{display:flex;flex-direction:column;gap:14px;}
 .sol-feature{display:flex;gap:16px;padding:18px;border:1px solid var(--border);border-radius:4px;background:rgba(6,14,26,0.5);transition:all .3s;}
@@ -137,7 +178,9 @@ section{position:relative;z-index:10;padding:90px 40px;}
 .ai-bar-track{height:4px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;}
 .ai-bar-fill{height:100%;width:94.7%;background:linear-gradient(90deg,var(--green),var(--blue));border-radius:2px;}
 .ai-bar-num{font-family:'Orbitron',sans-serif;font-size:14px;font-weight:800;color:var(--green);margin-top:4px;}
-#impact{background:var(--bg2);}
+
+/* IMPACT */
+#impact{background:var(--bg);}
 .impact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:4px;overflow:hidden;margin-bottom:48px;}
 .impact-card{background:var(--bg2);padding:36px 20px;text-align:center;transition:background .3s;}
 .impact-card:hover{background:rgba(255,107,26,0.04);}
@@ -150,12 +193,14 @@ section{position:relative;z-index:10;padding:90px 40px;}
 .ia-icon{font-size:32px;margin-bottom:12px;display:block;}
 .impact-area h3{font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;color:var(--white);letter-spacing:1px;margin-bottom:8px;text-transform:uppercase;}
 .impact-area p{font-size:13px;color:var(--text2);line-height:1.6;}
-#founder{background:var(--bg);}
+
+/* FOUNDER */
+#founder{background:var(--bg2);}
 .founder-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
 .founder-card{padding:44px;border:1px solid var(--border);border-radius:6px;background:rgba(6,14,26,0.85);position:relative;backdrop-filter:blur(10px);}
 .founder-card::before{content:'"';position:absolute;top:-16px;left:28px;font-family:'Cormorant Garamond',serif;font-size:100px;color:rgba(255,107,26,0.12);line-height:1;}
 .founder-card p{font-size:16px;color:var(--text);line-height:1.85;margin-bottom:18px;}
-.founder-card p:last-of-type{margin-bottom:0;}
+.founder-card p:last-of-type{margin-bottom:0;color:var(--text2);font-size:15px;}
 .founder-sig{margin-top:28px;padding-top:20px;border-top:1px solid var(--border);}
 .founder-name{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--white);letter-spacing:1px;}
 .founder-role{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--orange);letter-spacing:2px;margin-top:3px;}
@@ -166,54 +211,67 @@ section{position:relative;z-index:10;padding:90px 40px;}
 .vi-icon{font-size:22px;flex-shrink:0;margin-top:2px;}
 .vi-title{font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;color:var(--white);letter-spacing:2px;margin-bottom:4px;text-transform:uppercase;}
 .vi-text{font-size:14px;color:var(--text2);line-height:1.55;}
-#investors{background:var(--bg2);}
+
+/* INVESTORS */
+#investors{background:var(--bg);}
 .inv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:56px;}
 .inv-card{padding:32px;border:1px solid var(--border);border-radius:4px;background:rgba(3,8,15,0.8);transition:all .3s;position:relative;overflow:hidden;}
 .inv-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--orange),var(--blue));transform:scaleX(0);transform-origin:left;transition:transform .4s;}
-.inv-card:hover{transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,0.4);}.inv-card:hover::before{transform:scaleX(1);}
+.inv-card:hover{transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,0.4);}
+.inv-card:hover::before{transform:scaleX(1);}
 .inv-icon{font-size:32px;margin-bottom:14px;display:block;}
 .inv-title{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;color:var(--white);letter-spacing:1.5px;margin-bottom:10px;text-transform:uppercase;}
 .inv-text{font-size:13px;color:var(--text2);line-height:1.6;}
 .inv-cta{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--orange);letter-spacing:1px;}
+
+/* ROADMAP */
 .roadmap{margin-top:48px;}
 .rm-title{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;color:var(--white);letter-spacing:3px;text-transform:uppercase;text-align:center;margin-bottom:28px;}
 .rm-track{display:grid;grid-template-columns:repeat(5,1fr);position:relative;}
 .rm-track::before{content:'';position:absolute;top:19px;left:10%;right:10%;height:1px;background:linear-gradient(90deg,var(--orange),var(--blue));z-index:0;}
 .rm-step{text-align:center;position:relative;z-index:1;padding:0 6px;}
-.rm-dot{width:38px;height:38px;border-radius:50%;background:var(--bg2);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:800;color:var(--orange);}
+.rm-dot{width:38px;height:38px;border-radius:50%;background:var(--bg);border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:800;color:var(--orange);}
 .rm-dot.active{background:var(--orange);color:var(--white);box-shadow:0 0 20px rgba(255,107,26,0.5);}
 .rm-phase{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--orange);letter-spacing:1px;margin-bottom:3px;}
 .rm-name{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px;}
 .rm-desc{font-size:11px;color:var(--text2);line-height:1.4;}
+
+/* CTA */
 #cta{text-align:center;padding:100px 40px;position:relative;overflow:hidden;}
 #cta::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(255,107,26,0.07) 0%,transparent 70%);}
 .cta-inner{position:relative;z-index:1;max-width:760px;margin:0 auto;}
-.cta-title{font-family:'Orbitron',sans-serif;font-size:clamp(32px,5vw,60px);font-weight:900;color:var(--white);line-height:1.1;margin-bottom:14px;}
+.cta-title{font-family:'Orbitron',sans-serif;font-size:clamp(32px,5vw,58px);font-weight:900;color:var(--white);line-height:1.1;margin-bottom:14px;}
 .cta-title span{color:var(--orange);}
-.cta-tagline{font-family:'Orbitron',sans-serif;font-size:clamp(11px,1.3vw,14px);font-weight:600;color:var(--orange);letter-spacing:2px;margin-bottom:18px;text-transform:uppercase;border:1px solid var(--border-o);display:inline-block;padding:8px 20px;border-radius:2px;background:rgba(255,107,26,0.06);}
-.cta-sub{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2.5vw,24px);font-style:italic;color:var(--text2);margin-bottom:40px;line-height:1.6;}
+.cta-tagline{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2.5vw,24px);font-style:italic;color:var(--text2);margin-bottom:40px;line-height:1.6;}
 .cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:36px;}
 .cta-tags{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:2px;}
 .cta-tag::before{content:'◆ ';color:var(--orange);}
+
+/* FOOTER */
 footer{position:relative;z-index:10;padding:32px 40px;border-top:1px solid var(--border);background:rgba(2,6,12,0.99);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
 .footer-brand{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:800;color:var(--white);letter-spacing:2px;}
 .footer-brand span{color:var(--orange);}
 .footer-sub{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text2);letter-spacing:1.5px;margin-top:3px;}
 .footer-center{text-align:center;font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text2);letter-spacing:1px;line-height:1.8;}
 .footer-right{text-align:right;font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text2);letter-spacing:1px;line-height:1.8;}
+
+/* UTILS */
 .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s ease;}
 .reveal.visible{opacity:1;transform:translateY(0);}
 #notif{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(3,8,15,0.97);border:1px solid var(--orange);border-radius:4px;padding:10px 20px;font-family:'Rajdhani',sans-serif;font-size:14px;color:var(--orange);z-index:999;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .3s;box-shadow:0 0 20px rgba(255,107,26,0.3);}
 #notif.show{opacity:1;}
-::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-thumb{background:rgba(255,107,26,0.25);border-radius:2px;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:rgba(255,107,26,0.25);border-radius:2px;}
 </style>
 </head>
 <body>
+
 <div id="world-bg"></div>
 <div id="world-overlay"></div>
 <canvas id="netCanvas"></canvas>
 <div class="scanlines"></div>
 
+<!-- NAV -->
 <nav id="mainnav">
   <a class="nav-brand" href="index.html">
     <div class="nav-logo">MG</div>
@@ -221,26 +279,41 @@ footer{position:relative;z-index:10;padding:32px 40px;border-top:1px solid var(-
   </a>
   <ul class="nav-links">
     <li><a href="#live-dashboard">DASHBOARD</a></li>
-    <li><a href="#problem">PROBLEM</a></li>
-    <li><a href="#solution">SOLUTION</a></li>
+    <li><a href="#how">HOW IT WORKS</a></li>
+    <li><a href="#solution">PLATFORM</a></li>
     <li><a href="#founder">ABOUT</a></li>
     <li><a href="#investors">INVESTORS</a></li>
     <li><a href="donate.html">DONATE</a></li>
-    <li><a href="request-aid.html" class="nav-cta">REQUEST AID</a></li>
+    <li><a href="request-aid.html" class="nav-cta">REQUEST HELP</a></li>
   </ul>
   <div class="nav-status"><div class="dot"></div>NEXPATH AI ONLINE</div>
 </nav>
 
+<!-- ── HERO ── -->
 <section id="hero">
-  <div class="hero-tag">Global Humanitarian Intelligence Platform</div>
+  <div class="hero-tag">AI-Powered Humanitarian Platform — Built in Dubai</div>
   <h1 class="hero-title">MANKIND<span>GLOBAL</span></h1>
-  <p class="hero-serif">Where Technology Meets Humanity — Powered by NexPath AI</p>
-  <div class="hero-tagline">"One Help Can Make A Difference To Reach A Billion People"</div>
-  <p class="hero-desc">The world's first <strong>AI-powered humanitarian intelligence system</strong> — built from Dubai, connecting people in need with donors, volunteers and aid organizations in real time.<br><br><strong>No one left behind. No aid untracked. No crisis unseen.</strong></p>
+  <p class="hero-serif">Where Intelligence Meets Humanity</p>
+  <div class="hero-tagline">One act of help can reach millions.</div>
+  <p class="hero-desc">
+    An AI-powered humanitarian platform that connects people in need with donors, volunteers, and aid organizations — in real time, with <strong>full transparency from request to impact.</strong>
+  </p>
+  <!-- Flow diagram -->
+  <div class="hero-flow">
+    <div class="flow-step"><span>01</span> Request</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><span>02</span> AI Matches</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><span>03</span> Aid Deployed</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><span>04</span> Tracked Live</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step"><span>05</span> Verified Impact</div>
+  </div>
   <div class="hero-btns">
-    <a href="request-aid.html" class="btn-primary">⚡ REQUEST AID NOW</a>
-    <a href="donate.html" class="btn-outline">❤️ DONATE NOW</a>
-    <a href="#live-dashboard" class="btn-secondary">◈ VIEW LIVE PLATFORM</a>
+    <a href="request-aid.html" class="btn-primary">⚡ Request Help — Get Matched Fast</a>
+    <a href="donate.html" class="btn-outline">❤️ Donate with Full Transparency</a>
+    <a href="#live-dashboard" class="btn-secondary">◈ View Live Platform</a>
   </div>
   <div class="stats-bar">
     <div class="stat-item"><div class="stat-live"></div><div class="stat-num" id="h-req">0</div><div class="stat-label">Aid Requests</div></div>
@@ -252,6 +325,7 @@ footer{position:relative;z-index:10;padding:32px 40px;border-top:1px solid var(-
   <div class="scroll-cue"><span>SCROLL TO EXPLORE</span><div class="scroll-line"></div></div>
 </section>
 
+<!-- ── LIVE DASHBOARD ── -->
 <div id="live-dashboard">
 <div class="dash-wrap">
   <div class="dash-topbar">
@@ -263,7 +337,7 @@ footer{position:relative;z-index:10;padding:32px 40px;border-top:1px solid var(-
     </div>
   </div>
   <div class="dash-metrics">
-    <div class="dash-metric"><div class="dm-label">Aid Requests</div><div class="dm-value" id="d-req">0</div><div class="dm-note" id="d-note">● Connecting...</div></div>
+    <div class="dash-metric"><div class="dm-label">Aid Requests</div><div class="dm-value" id="d-req">0</div><div class="dm-note" id="d-note">● Connecting to database...</div></div>
     <div class="dash-metric"><div class="dm-label">Volunteers</div><div class="dm-value" id="d-vol">0</div><div class="dm-note">● Live from database</div></div>
     <div class="dash-metric"><div class="dm-label">Active Missions</div><div class="dm-value" id="d-missions">0</div><div class="dm-note">● Live from database</div></div>
     <div class="dash-metric"><div class="dm-label">Total Donated USD</div><div class="dm-value" id="d-donated">$0.00</div><div class="dm-note">● Live from database</div></div>
@@ -272,17 +346,17 @@ footer{position:relative;z-index:10;padding:32px 40px;border-top:1px solid var(-
     <div class="dash-side">
       <div>
         <div class="ds-title">Crisis Hotspots</div>
-        <div class="crisis-row" onclick="notify('📡 SUDAN — Critical. NexPath AI monitoring.')"><span class="crisis-name-txt">SUDAN</span><span class="cbadge c">CRITICAL</span></div>
-        <div class="crisis-row" onclick="notify('📡 GAZA — Critical. Emergency response active.')"><span class="crisis-name-txt">GAZA</span><span class="cbadge c">CRITICAL</span></div>
-        <div class="crisis-row" onclick="notify('📡 HAITI — High priority. Aid routing.')"><span class="crisis-name-txt">HAITI</span><span class="cbadge h">HIGH</span></div>
-        <div class="crisis-row" onclick="notify('📡 YEMEN — High priority. Shelter mission.')"><span class="crisis-name-txt">YEMEN</span><span class="cbadge h">HIGH</span></div>
-        <div class="crisis-row" onclick="notify('📡 DR CONGO — High priority. Monitoring.')"><span class="crisis-name-txt">DR CONGO</span><span class="cbadge h">HIGH</span></div>
-        <div class="crisis-row" onclick="notify('📡 MYANMAR — Moderate. Monitoring active.')"><span class="crisis-name-txt">MYANMAR</span><span class="cbadge m">MODERATE</span></div>
+        <div class="crisis-row" onclick="notify('📡 SUDAN — Critical. Aid coordination active.')"><span class="crisis-name-txt">SUDAN</span><span class="cbadge c">CRITICAL</span></div>
+        <div class="crisis-row" onclick="notify('📡 GAZA — Critical. Emergency response deployed.')"><span class="crisis-name-txt">GAZA</span><span class="cbadge c">CRITICAL</span></div>
+        <div class="crisis-row" onclick="notify('📡 HAITI — High. Medical teams mobilizing.')"><span class="crisis-name-txt">HAITI</span><span class="cbadge h">HIGH</span></div>
+        <div class="crisis-row" onclick="notify('📡 YEMEN — High. Shelter mission active.')"><span class="crisis-name-txt">YEMEN</span><span class="cbadge h">HIGH</span></div>
+        <div class="crisis-row" onclick="notify('📡 DR CONGO — High. Aid routing in progress.')"><span class="crisis-name-txt">DR CONGO</span><span class="cbadge h">HIGH</span></div>
+        <div class="crisis-row" onclick="notify('📡 MYANMAR — Moderate. Situation monitored.')"><span class="crisis-name-txt">MYANMAR</span><span class="cbadge m">MODERATE</span></div>
       </div>
       <div style="margin-top:auto;display:flex;flex-direction:column;gap:6px;">
-        <a href="request-aid.html" class="btn-primary" style="justify-content:center;font-size:9px;padding:9px;">+ REQUEST AID</a>
-        <a href="donate.html" class="btn-outline" style="justify-content:center;font-size:9px;padding:8px;">❤️ DONATE NOW</a>
-        <a href="volunteer.html" class="btn-secondary" style="justify-content:center;font-size:9px;padding:8px;">◈ VOLUNTEER</a>
+        <a href="request-aid.html" class="btn-primary" style="justify-content:center;font-size:9px;padding:9px;">+ REQUEST HELP NOW</a>
+        <a href="donate.html" class="btn-outline" style="justify-content:center;font-size:9px;padding:8px;">❤️ DONATE — TRACK EVERY DOLLAR</a>
+        <a href="volunteer.html" class="btn-secondary" style="justify-content:center;font-size:9px;padding:8px;">◈ JOIN AS VOLUNTEER</a>
       </div>
     </div>
     <div class="dash-map"><canvas id="dashMapCanvas"></canvas></div>
@@ -315,40 +389,84 @@ footer{position:relative;z-index:10;padding:32px 40px;border-top:1px solid var(-
   </div>
   <div class="live-ticker">
     <span class="ticker-lbl">◆ LIVE</span>
-    <span class="ticker-live-text" id="ticker-text">● System online — real activity will appear here</span>
+    <span class="ticker-live-text" id="ticker-text">● System online — real activity appears here instantly</span>
     <span class="ticker-clock" id="clock"></span>
   </div>
 </div>
 </div>
 
+<!-- ── PROBLEM ── -->
 <section id="problem">
   <div class="sec-inner">
     <div class="sec-tag">The Problem</div>
-    <h2 class="sec-title">The Global Aid System<br><span>Is Broken</span></h2>
-    <p class="sec-lead">Billions donated. Millions still suffering. The gap between giving and impact has never been wider.</p>
+    <h2 class="sec-title">Billions Given.<br><span>Millions Still Waiting.</span></h2>
+    <p class="sec-lead">The problem is not a lack of resources. It is a lack of coordination, intelligence, and transparency.</p>
     <div class="problem-grid reveal">
-      <div class="prob-card"><span class="prob-icon">🧩</span><h3>Fragmented Systems</h3><p>Thousands of disconnected NGOs operating in silos with no shared intelligence or real-time coordination.</p></div>
-      <div class="prob-card"><span class="prob-icon">👁️</span><h3>Zero Transparency</h3><p>Donors have no visibility into where money goes. Trust in humanitarian organizations is rapidly declining.</p></div>
-      <div class="prob-card"><span class="prob-icon">🐌</span><h3>Reactive Not Proactive</h3><p>Aid arrives after the crisis peaks. No predictive intelligence, no pre-positioning of resources.</p></div>
-      <div class="prob-card"><span class="prob-icon">📡</span><h3>No Real-Time Data</h3><p>Crisis information is days old by the time it reaches decision-makers — costing lives every hour.</p></div>
-      <div class="prob-card"><span class="prob-icon">🌍</span><h3>The Invisible Suffering</h3><p>Millions in detention, displacement and disaster zones remain completely invisible to existing systems.</p></div>
-      <div class="prob-card"><span class="prob-icon">📉</span><h3>Donor Trust Collapse</h3><p>Global charitable giving is declining as donors lose confidence in accountability and impact reporting.</p></div>
+      <div class="prob-card"><span class="prob-icon">🧩</span><h3>Fragmented Systems</h3><p>Thousands of NGOs operate in complete isolation — no shared data, no coordination, no collective intelligence.</p></div>
+      <div class="prob-card"><span class="prob-icon">👁️</span><h3>No Donor Visibility</h3><p>Contributions disappear into systems donors cannot see. Trust has collapsed. Giving is declining globally.</p></div>
+      <div class="prob-card"><span class="prob-icon">🐌</span><h3>Always Reactive</h3><p>Aid arrives after the peak. No prediction. No pre-positioning. Decisions made on outdated information.</p></div>
+      <div class="prob-card"><span class="prob-icon">📡</span><h3>Outdated Intelligence</h3><p>Crisis data is days or weeks old by the time it reaches decision-makers — at a cost that cannot be measured in money.</p></div>
+      <div class="prob-card"><span class="prob-icon">🌍</span><h3>Invisible Populations</h3><p>Millions in displacement, detention, and disaster zones remain completely undetected by existing systems.</p></div>
+      <div class="prob-card"><span class="prob-icon">📉</span><h3>Eroding Trust</h3><p>Without transparency, donors stop giving. Without donors, systems collapse. The cycle continues unchallenged.</p></div>
+    </div>
+    <div class="problem-conclusion reveal">
+      <p>The humanitarian system does not need more charity.<br>It needs <span>better intelligence, better coordination, and radical transparency.</span></p>
     </div>
   </div>
 </section>
 
+<!-- ── HOW IT WORKS ── -->
+<section id="how">
+  <div class="sec-inner">
+    <div class="sec-tag">How It Works</div>
+    <h2 class="sec-title">From Request<br><span>to Verified Impact.</span></h2>
+    <p class="sec-lead">No delays. No guesswork. No black boxes. Every step is tracked, every outcome is visible.</p>
+    <div class="how-steps reveal">
+      <div class="how-step">
+        <div class="how-num">01</div>
+        <div class="how-title">Request Submitted</div>
+        <div class="how-desc">Anyone, anywhere submits a need — food, shelter, medical, emergency — directly through the platform.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">02</div>
+        <div class="how-title">AI Analyzes</div>
+        <div class="how-desc">NexPath AI verifies the request, assesses urgency, and determines the fastest path to help.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">03</div>
+        <div class="how-title">Smart Match</div>
+        <div class="how-desc">The system matches the request with the nearest available donor, volunteer, or aid organization.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">04</div>
+        <div class="how-title">Aid Delivered</div>
+        <div class="how-desc">Resources are deployed and tracked in real time — from dispatch to delivery, every step is recorded.</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">05</div>
+        <div class="how-title">Full Transparency</div>
+        <div class="how-desc">Donors receive a verified impact report showing exactly where their contribution went and who it helped.</div>
+      </div>
+    </div>
+    <div class="how-conclusion reveal">
+      <p>◆ Every request tracked &nbsp;·&nbsp; Every dollar visible &nbsp;·&nbsp; Every outcome verified</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── SOLUTION ── -->
 <section id="solution">
   <div class="sec-inner">
-    <div class="sec-tag">The Solution</div>
-    <h2 class="sec-title">One Intelligent Platform.<br><span>Global Impact.</span></h2>
-    <p class="sec-lead">NexPath AI is the operating system for global humanitarian aid — connecting every actor, every resource, every need in real time.</p>
+    <div class="sec-tag">The Platform</div>
+    <h2 class="sec-title">Not Another NGO.<br><span>Infrastructure for Aid.</span></h2>
+    <p class="sec-lead">NexPath AI is a connected intelligence system — built to coordinate aid at scale, across borders, in real time.</p>
     <div class="sol-grid reveal">
       <div class="sol-features">
-        <div class="sol-feature"><div class="sol-icon">🌍</div><div class="sol-content"><h4>Live Global Aid Map</h4><p>Real-time visualization of crisis zones, aid missions, donation flows and volunteer locations worldwide.</p></div></div>
-        <div class="sol-feature"><div class="sol-icon">🤖</div><div class="sol-content"><h4>AI Matching Engine</h4><p>Intelligent matching of aid requests to donors, volunteers and resources — accurate, fast, transparent.</p></div></div>
-        <div class="sol-feature"><div class="sol-icon">📡</div><div class="sol-content"><h4>Smart Request System</h4><p>Anyone, anywhere can request help — food, shelter, medical, emergency — directly through the platform.</p></div></div>
-        <div class="sol-feature"><div class="sol-icon">💳</div><div class="sol-content"><h4>Transparent Donation Tracking</h4><p>Every dollar tracked from donor to recipient with real-time impact reports.</p></div></div>
-        <div class="sol-feature"><div class="sol-icon">🔮</div><div class="sol-content"><h4>Crisis Prediction Engine</h4><p>AI models that predict humanitarian crises before they peak — enabling pre-emptive response.</p></div></div>
+        <div class="sol-feature"><div class="sol-icon">🌍</div><div class="sol-content"><h4>Live Global Aid Map</h4><p>Visualizes crisis zones, active missions, donation flows, and volunteer locations — updated in real time across all active regions.</p></div></div>
+        <div class="sol-feature"><div class="sol-icon">🤖</div><div class="sol-content"><h4>AI Matching Engine</h4><p>Matches verified aid requests with donors, volunteers, and resources — prioritized by urgency, type, and proximity.</p></div></div>
+        <div class="sol-feature"><div class="sol-icon">📡</div><div class="sol-content"><h4>Direct Request System</h4><p>Anyone can submit a request for food, shelter, medical care, or emergency support — directly, from any device, in any country.</p></div></div>
+        <div class="sol-feature"><div class="sol-icon">💳</div><div class="sol-content"><h4>End-to-End Donation Tracking</h4><p>Every contribution is tracked from the moment it is made to the moment it reaches a recipient. No black boxes.</p></div></div>
+        <div class="sol-feature"><div class="sol-icon">🔮</div><div class="sol-content"><h4>Crisis Prediction Engine</h4><p>AI models analyze patterns to anticipate crises 30–60 days in advance — enabling pre-emptive resource positioning.</p></div></div>
       </div>
       <div>
         <div class="demo-panel">
@@ -367,11 +485,15 @@ footer{position:relative;z-index:10;padding:32px 40px;border-top:1px solid var(-
             <div id="demo-feed">
               <div class="demo-feed-item"><div class="demo-fdot"></div>NexPath AI system online.</div>
               <div class="demo-feed-item"><div class="demo-fdot"></div>Database connected — ready.</div>
-              <div class="demo-feed-item"><div class="demo-fdot"></div>Crisis zones loaded — 6 active.</div>
+              <div class="demo-feed-item"><div class="demo-fdot"></div>Crisis zones loaded — 6 active regions.</div>
               <div class="demo-feed-item"><div class="demo-fdot"></div>Aid matching engine — standby.</div>
-              <div class="demo-feed-item" id="demo-live"><div class="demo-fdot"></div><span>Waiting for first real request...</span></div>
+              <div class="demo-feed-item" id="demo-live"><div class="demo-fdot"></div><span>Awaiting first real request...</span></div>
             </div>
-            <div class="ai-bar"><div class="ai-bar-lbl">● NEXPATH AI ENGINE — CONFIDENCE SCORE</div><div class="ai-bar-track"><div class="ai-bar-fill"></div></div><div class="ai-bar-num">94.7%</div></div>
+            <div class="ai-bar">
+              <div class="ai-bar-lbl">● NEXPATH AI ENGINE — CONFIDENCE SCORE</div>
+              <div class="ai-bar-track"><div class="ai-bar-fill"></div></div>
+              <div class="ai-bar-num">94.7%</div>
+            </div>
           </div>
         </div>
       </div>
@@ -379,39 +501,41 @@ footer{position:relative;z-index:10;padding:32px 40px;border-top:1px solid var(-
   </div>
 </section>
 
+<!-- ── IMPACT ── -->
 <section id="impact">
   <div class="sec-inner">
-    <div class="sec-tag">Our Impact</div>
-    <h2 class="sec-title">Built to Scale.<br><span>Built to Last.</span></h2>
-    <p class="sec-lead">Every number below is real — pulled live from our database. No fake data. Ever.</p>
+    <div class="sec-tag">Live Impact</div>
+    <h2 class="sec-title">Real Numbers.<br><span>Real People.</span></h2>
+    <p class="sec-lead">Every number below is pulled directly from our live database. This is not projected impact. This is live infrastructure.</p>
     <div class="impact-grid reveal">
-      <div class="impact-card"><div class="impact-num" id="i-req">0</div><div class="impact-lbl">Aid Requests</div><div class="impact-note">● Live count</div></div>
-      <div class="impact-card"><div class="impact-num" id="i-vol">0</div><div class="impact-lbl">Volunteers</div><div class="impact-note">● Live count</div></div>
-      <div class="impact-card"><div class="impact-num" id="i-donated">$0</div><div class="impact-lbl">Total Donated</div><div class="impact-note">● Live count</div></div>
-      <div class="impact-card"><div class="impact-num">94.7%</div><div class="impact-lbl">AI Accuracy</div><div class="impact-note">● NexPath AI engine</div></div>
+      <div class="impact-card"><div class="impact-num" id="i-req">0</div><div class="impact-lbl">Aid Requests</div><div class="impact-note">● Live database count</div></div>
+      <div class="impact-card"><div class="impact-num" id="i-vol">0</div><div class="impact-lbl">Volunteers</div><div class="impact-note">● Live database count</div></div>
+      <div class="impact-card"><div class="impact-num" id="i-donated">$0</div><div class="impact-lbl">Total Donated</div><div class="impact-note">● Live database count</div></div>
+      <div class="impact-card"><div class="impact-num">94.7%</div><div class="impact-lbl">AI Match Accuracy</div><div class="impact-note">● NexPath AI engine</div></div>
     </div>
     <div class="impact-areas reveal">
-      <div class="impact-area"><span class="ia-icon">🍞</span><h3>Food Security</h3><p>AI-coordinated food distribution ensuring no family goes hungry — tracked from source to recipient.</p></div>
-      <div class="impact-area"><span class="ia-icon">🏠</span><h3>Shelter & Housing</h3><p>Emergency shelter coordination for displaced communities with real-time capacity tracking.</p></div>
-      <div class="impact-area"><span class="ia-icon">🏥</span><h3>Medical Aid</h3><p>Medical team deployment and supply management for crisis zones, powered by predictive AI.</p></div>
-      <div class="impact-area"><span class="ia-icon">⚖️</span><h3>Women in Detention</h3><p>A specialized program providing support, dignity and legal aid to women in detention — close to our founder's heart.</p></div>
-      <div class="impact-area"><span class="ia-icon">🚨</span><h3>Crisis Response</h3><p>Rapid emergency deployment systems that activate within hours of a crisis — not days.</p></div>
-      <div class="impact-area"><span class="ia-icon">🎓</span><h3>Education Access</h3><p>School funding and educational support for underserved communities across the world.</p></div>
+      <div class="impact-area"><span class="ia-icon">🍞</span><h3>Food Security</h3><p>Coordinated food distribution tracked from source to recipient — every delivery confirmed and recorded.</p></div>
+      <div class="impact-area"><span class="ia-icon">🏠</span><h3>Shelter</h3><p>Emergency shelter deployment for displaced communities with real-time capacity and logistics tracking.</p></div>
+      <div class="impact-area"><span class="ia-icon">🏥</span><h3>Medical Aid</h3><p>Medical teams and supplies routed to crisis zones using predictive positioning — before needs escalate.</p></div>
+      <div class="impact-area"><span class="ia-icon">⚖️</span><h3>Women in Detention</h3><p>A dedicated program providing legal support, dignity, and visibility to women in detention — a cause that shaped this platform.</p></div>
+      <div class="impact-area"><span class="ia-icon">🚨</span><h3>Crisis Response</h3><p>Rapid deployment activated within hours of a crisis event — not days — through pre-positioned AI-matched resources.</p></div>
+      <div class="impact-area"><span class="ia-icon">🎓</span><h3>Education</h3><p>Funding and support for educational access in underserved communities — building long-term resilience.</p></div>
     </div>
   </div>
 </section>
 
+<!-- ── FOUNDER ── -->
 <section id="founder">
   <div class="sec-inner">
     <div class="sec-tag">Our Foundation</div>
-    <h2 class="sec-title">A Mission Born<br><span>From Experience</span></h2>
-    <p class="sec-lead">Mankind Global was not built in a boardroom. It was built from lived truth and real purpose.</p>
+    <h2 class="sec-title">Built From<br><span>Lived Experience.</span></h2>
+    <p class="sec-lead">Mankind Global was not built in theory. It was built from firsthand experience navigating systems that fail when people need them most.</p>
     <div class="founder-grid reveal">
       <div class="founder-card">
         <p>Mankind Global was built from real-life experience — from understanding what it means to face uncertainty and the need for support when systems are not always connected.</p>
         <p>That experience led to a clear mission: to create a smarter, faster, and more reliable way to connect people in need with those who can help.</p>
-        <p>Powered by NexPath AI, Mankind Global is designed to bring together technology, data, and human compassion — ensuring that aid is no longer delayed, fragmented, or inaccessible.</p>
-        <p>Today, we are building a global humanitarian intelligence platform from Dubai — a city that represents innovation, ambition, and forward-thinking solutions for the world.</p>
+        <p>Powered by NexPath AI, Mankind Global brings together technology, data, and human compassion — ensuring that aid is no longer delayed, fragmented, or inaccessible.</p>
+        <p>Today, from Dubai — a city that represents innovation, ambition, and forward-thinking solutions — we are building a global humanitarian intelligence platform for the world.</p>
         <div class="founder-sig">
           <div class="founder-name">TIDIMALO KONAITE</div>
           <div class="founder-role">FOUNDER & CEO — MANKIND GLOBAL</div>
@@ -420,60 +544,62 @@ footer{position:relative;z-index:10;padding:32px 40px;border-top:1px solid var(-
       </div>
       <div class="values">
         <div class="value-item"><span class="vi-icon">❤️</span><div><div class="vi-title">Compassion First</div><div class="vi-text">Every system, every algorithm, every decision guided by one question: does this reduce human suffering?</div></div></div>
-        <div class="value-item"><span class="vi-icon">🌐</span><div><div class="vi-title">Global Inclusion</div><div class="vi-text">No borders. No exclusions. Help reaches every corner of the world regardless of geography or faith.</div></div></div>
-        <div class="value-item"><span class="vi-icon">🔍</span><div><div class="vi-title">Radical Transparency</div><div class="vi-text">Every dollar, every action, every outcome visible. Donors see exactly where their contribution goes.</div></div></div>
-        <div class="value-item"><span class="vi-icon">⚡</span><div><div class="vi-title">Technology as Good</div><div class="vi-text">AI is humanity's greatest tool. We use it to amplify compassion and connect help to those who need it most.</div></div></div>
-        <div class="value-item"><span class="vi-icon">🤝</span><div><div class="vi-title">Collective Power</div><div class="vi-text">One help can make a difference to reach a billion people to help.</div></div></div>
+        <div class="value-item"><span class="vi-icon">🌐</span><div><div class="vi-title">No Borders</div><div class="vi-text">Help reaches every corner of the world regardless of geography, nationality, or faith.</div></div></div>
+        <div class="value-item"><span class="vi-icon">🔍</span><div><div class="vi-title">Full Transparency</div><div class="vi-text">Every dollar, every action, every outcome is visible. Donors see exactly where their contribution goes.</div></div></div>
+        <div class="value-item"><span class="vi-icon">⚡</span><div><div class="vi-title">Technology as Good</div><div class="vi-text">AI is humanity's most powerful tool. We use it to amplify compassion — not replace it.</div></div></div>
+        <div class="value-item"><span class="vi-icon">🤝</span><div><div class="vi-title">Collective Action</div><div class="vi-text">One act of help can reach millions. We build the systems that make that possible at scale.</div></div></div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- ── INVESTORS ── -->
 <section id="investors">
   <div class="sec-inner">
     <div class="sec-tag">Investor Information</div>
-    <h2 class="sec-title">Join the Future<br><span>of Global Aid</span></h2>
-    <p class="sec-lead">Built from zero, from Dubai, with purpose. We are creating the world's first AI humanitarian platform — designed to go public. Think Apple. Think Tesla. Think Mankind Global.</p>
+    <h2 class="sec-title">A New Category.<br><span>AI Humanitarian Infrastructure.</span></h2>
+    <p class="sec-lead">A category-defining platform at the intersection of AI, global systems, and humanitarian impact — with a SaaS model, real-time data layer, and a mission that is both fundable and necessary.</p>
     <div class="inv-grid reveal">
-      <div class="inv-card"><span class="inv-icon">💰</span><div class="inv-title">Corporate Partners</div><div class="inv-text">Embed NexPath AI into your CSR strategy with full impact tracking and branded impact reports.</div><div class="inv-cta">→ MEASURABLE ESG IMPACT</div></div>
-      <div class="inv-card"><span class="inv-icon">🏛️</span><div class="inv-title">Institutional Investors</div><div class="inv-text">A scalable SaaS model with humanitarian NGO licensing, government contracts and global defensibility.</div><div class="inv-cta">→ SCALABLE REVENUE MODEL</div></div>
-      <div class="inv-card"><span class="inv-icon">🌍</span><div class="inv-title">Global Philanthropists</div><div class="inv-text">Every dollar builds infrastructure that makes all future aid more effective and transparent.</div><div class="inv-cta">→ MULTIPLIED IMPACT</div></div>
-      <div class="inv-card"><span class="inv-icon">🏦</span><div class="inv-title">Government & NGO Grants</div><div class="inv-text">Positioned for UNHCR, World Bank, UAE humanitarian funds and international AI-driven aid grants.</div><div class="inv-cta">→ GRANT-READY PLATFORM</div></div>
-      <div class="inv-card"><span class="inv-icon">🔬</span><div class="inv-title">Technology Partners</div><div class="inv-text">Co-build the future of humanitarian AI. Where the biggest tech companies will want to be part of the creation.</div><div class="inv-cta">→ TECH ECOSYSTEM PLAY</div></div>
-      <div class="inv-card"><span class="inv-icon">🚀</span><div class="inv-title">Impact VCs</div><div class="inv-text">Category-defining company at the intersection of AI, SaaS and humanitarian tech — built for the stock market.</div><div class="inv-cta">→ FUTURE IPO CANDIDATE</div></div>
+      <div class="inv-card"><span class="inv-icon">💰</span><div class="inv-title">Corporate Partners</div><div class="inv-text">Integrate NexPath AI into your CSR framework with real-time impact data, employee volunteer programs, and verified impact reports.</div><div class="inv-cta">→ MEASURABLE ESG IMPACT</div></div>
+      <div class="inv-card"><span class="inv-icon">🏛️</span><div class="inv-title">Institutional Investors</div><div class="inv-text">A scalable SaaS model with licensing to NGOs and governments, recurring revenue, and a defensible global data layer.</div><div class="inv-cta">→ SCALABLE REVENUE MODEL</div></div>
+      <div class="inv-card"><span class="inv-icon">🌍</span><div class="inv-title">Global Philanthropists</div><div class="inv-text">Every dollar invested in the infrastructure multiplies the impact of every future dollar donated through the platform.</div><div class="inv-cta">→ MULTIPLIED IMPACT</div></div>
+      <div class="inv-card"><span class="inv-icon">🏦</span><div class="inv-title">Government & NGO Grants</div><div class="inv-text">Positioned for UNHCR, World Bank, UAE humanitarian funds, and international development grants targeting AI-driven aid systems.</div><div class="inv-cta">→ GRANT-READY PLATFORM</div></div>
+      <div class="inv-card"><span class="inv-icon">🔬</span><div class="inv-title">Technology Partners</div><div class="inv-text">Co-build the future of humanitarian AI. The platform is designed for deep integration across the global tech-for-good ecosystem.</div><div class="inv-cta">→ TECH ECOSYSTEM PLAY</div></div>
+      <div class="inv-card"><span class="inv-icon">🚀</span><div class="inv-title">Impact Investors</div><div class="inv-text">A category-defining company at the intersection of AI, SaaS, and humanitarian infrastructure — built for long-term scale.</div><div class="inv-cta">→ CATEGORY-DEFINING</div></div>
     </div>
     <div class="roadmap reveal">
       <div class="rm-title">◈ PLATFORM ROADMAP</div>
       <div class="rm-track">
-        <div class="rm-step"><div class="rm-dot active">1</div><div class="rm-phase">NOW</div><div class="rm-name">Foundation</div><div class="rm-desc">Website live, database active, aid request system working</div></div>
-        <div class="rm-step"><div class="rm-dot">2</div><div class="rm-phase">PHASE 2</div><div class="rm-name">Platform</div><div class="rm-desc">Live donations, volunteer system, mobile app</div></div>
-        <div class="rm-step"><div class="rm-dot">3</div><div class="rm-phase">PHASE 3</div><div class="rm-name">Global Scale</div><div class="rm-desc">Crisis prediction, global partnerships, 50+ countries</div></div>
-        <div class="rm-step"><div class="rm-dot">4</div><div class="rm-phase">PHASE 4</div><div class="rm-name">SaaS Layer</div><div class="rm-desc">License NexPath AI to NGOs and governments globally</div></div>
-        <div class="rm-step"><div class="rm-dot">5</div><div class="rm-phase">PHASE 5</div><div class="rm-name">Public Market</div><div class="rm-desc">IPO — world's first listed AI humanitarian platform</div></div>
+        <div class="rm-step"><div class="rm-dot active">1</div><div class="rm-phase">NOW</div><div class="rm-name">Foundation</div><div class="rm-desc">Platform live, database active, aid request system working</div></div>
+        <div class="rm-step"><div class="rm-dot">2</div><div class="rm-phase">PHASE 2</div><div class="rm-name">Full Platform</div><div class="rm-desc">Live donations, volunteer coordination, mobile app</div></div>
+        <div class="rm-step"><div class="rm-dot">3</div><div class="rm-phase">PHASE 3</div><div class="rm-name">Global Scale</div><div class="rm-desc">Crisis prediction engine, 50+ countries, global partnerships</div></div>
+        <div class="rm-step"><div class="rm-dot">4</div><div class="rm-phase">PHASE 4</div><div class="rm-name">SaaS Layer</div><div class="rm-desc">License NexPath AI to NGOs and governments worldwide</div></div>
+        <div class="rm-step"><div class="rm-dot">5</div><div class="rm-phase">PHASE 5</div><div class="rm-name">Public Market</div><div class="rm-desc">IPO — the world's first publicly listed AI humanitarian platform</div></div>
       </div>
     </div>
   </div>
 </section>
 
+<!-- ── CTA ── -->
 <section id="cta">
   <div class="cta-inner">
-    <h2 class="cta-title">We Are Not Just<br><span>Giving Aid.</span></h2>
-    <div class="cta-tagline">"One Help Can Make A Difference To Reach A Billion People"</div>
-    <p class="cta-sub">"We are rebuilding how humanity gives — with intelligence, transparency, and compassion at the core."</p>
+    <h2 class="cta-title">We Are Rebuilding<br><span>How the World Responds.</span></h2>
+    <p class="cta-tagline">"One act of help can reach millions. This is how we make that possible."</p>
     <div class="cta-btns">
-      <a href="request-aid.html" class="btn-primary">⚡ REQUEST AID NOW</a>
-      <a href="donate.html" class="btn-outline">❤️ DONATE NOW</a>
-      <a href="mailto:contact@globaldriveaid.com" class="btn-secondary">◈ PARTNER WITH US</a>
+      <a href="request-aid.html" class="btn-primary">⚡ Request Help — Immediate Support</a>
+      <a href="donate.html" class="btn-outline">❤️ Donate — Track Every Dollar</a>
+      <a href="mailto:contact@globaldriveaid.com" class="btn-secondary">◈ Partner With Us</a>
     </div>
     <div class="cta-tags">
       <span class="cta-tag">No One Left Behind</span>
-      <span class="cta-tag">Technology Serving Humanity</span>
-      <span class="cta-tag">From Need to Help Instantly</span>
-      <span class="cta-tag">Built in Dubai For The World</span>
+      <span class="cta-tag">Every Dollar Tracked</span>
+      <span class="cta-tag">Built in Dubai For the World</span>
+      <span class="cta-tag">AI-Powered Humanitarian Intelligence</span>
     </div>
   </div>
 </section>
 
+<!-- FOOTER -->
 <footer>
   <div>
     <div class="footer-brand">MANKIND <span>GLOBAL</span></div>
@@ -487,6 +613,7 @@ footer{position:relative;z-index:10;padding:32px 40px;border-top:1px solid var(-
 <div id="notif"></div>
 
 <script>
+// SUPABASE
 const{createClient}=supabase;
 const sb=createClient('https://ehlbtosecxhneixkmcab.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVobGJ0b3NlY3hobmVpeGttY2FiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NDE2MTEsImV4cCI6MjA5MzAxNzYxMX0.IbLP1mXF-U-UtcGtYTQqqjZFDFwGbkF8HL974J_3iWo');
 
@@ -509,33 +636,45 @@ async function loadStats(){
     const{count:pend}=await sb.from('aid_requests').select('*',{count:'exact',head:true}).eq('status','pending');
     const{count:act}=await sb.from('aid_requests').select('*',{count:'exact',head:true}).eq('status','active');
     const{count:comp}=await sb.from('aid_requests').select('*',{count:'exact',head:true}).eq('status','completed');
+    // Hero
     set('h-req',fmt(req));set('h-vol',fmt(vol));set('h-donated',fmtUSD(donated));set('h-countries',fmt(countries));set('h-missions',fmt(mis));
+    // Dashboard
     set('d-req',fmt(req));set('d-vol',fmt(vol));set('d-missions',fmt(mis));set('d-donated',fmtUSD(donated));
-    set('d-note','● '+req+' real requests in database');
+    set('d-note','● '+fmt(req)+' real requests in database');
+    // Demo panel
     set('dm-req',fmt(req));set('dm-vol',fmt(vol));set('dm-missions',fmt(mis));set('dm-countries',fmt(countries));
+    // Impact
     set('i-req',fmt(req));set('i-vol',fmt(vol));set('i-donated',fmtUSD(donated));
+    // Overview
     set('r-pending',fmt(pend));set('r-active',fmt(act));set('r-completed',fmt(comp));
-    if(req>0){const el=document.getElementById('demo-live');if(el)el.querySelector('span').textContent=req+' real aid requests submitted.';}
-  }catch(e){console.error(e);}
+    // Demo live text
+    if(req>0){const el=document.getElementById('demo-live');if(el)el.querySelector('span').textContent=fmt(req)+' real aid requests in system.';}
+  }catch(e){console.error('Stats error:',e);}
 }
 loadStats();setInterval(loadStats,30000);
 
-sb.channel('rt').on('postgres_changes',{event:'INSERT',schema:'public',table:'aid_requests'},p=>{
-  loadStats();
-  const msg=`New ${p.new.urgency} request — ${p.new.aid_type} — ${p.new.city}, ${p.new.country}`;
-  addFeed(msg);set('ticker-text','● '+msg);set('feed-label','● LIVE');
-  notify('📩 New aid request from '+p.new.city+', '+p.new.country);
-}).on('postgres_changes',{event:'INSERT',schema:'public',table:'donations'},p=>{
-  loadStats();
-  const msg='Donation received — $'+p.new.amount_usd;
-  addFeed(msg);set('ticker-text','● '+msg);
-  notify('❤️ New donation — $'+p.new.amount_usd);
-}).on('postgres_changes',{event:'INSERT',schema:'public',table:'volunteers'},p=>{
-  loadStats();
-  const msg='New volunteer registered from '+p.new.country;
-  addFeed(msg);notify('🙌 New volunteer from '+p.new.country);
-}).subscribe();
+// REALTIME
+sb.channel('rt')
+  .on('postgres_changes',{event:'INSERT',schema:'public',table:'aid_requests'},p=>{
+    loadStats();
+    const msg=`New ${p.new.urgency} request — ${p.new.aid_type} — ${p.new.city}, ${p.new.country}`;
+    addFeed(msg);set('ticker-text','● '+msg);set('feed-label','● LIVE');
+    notify('📩 New aid request from '+p.new.city+', '+p.new.country);
+  })
+  .on('postgres_changes',{event:'INSERT',schema:'public',table:'donations'},p=>{
+    loadStats();
+    const msg='Donation received — $'+parseFloat(p.new.amount_usd).toFixed(2)+' — tracked in real time';
+    addFeed(msg);set('ticker-text','● '+msg);
+    notify('❤️ New donation — $'+parseFloat(p.new.amount_usd).toFixed(2));
+  })
+  .on('postgres_changes',{event:'INSERT',schema:'public',table:'volunteers'},p=>{
+    loadStats();
+    const msg='New volunteer registered from '+p.new.country;
+    addFeed(msg);notify('🙌 New volunteer from '+p.new.country);
+  })
+  .subscribe();
 
+// FEED
 const feedEl=document.getElementById('live-feed');
 function addFeed(text){
   const now=new Date();
@@ -548,21 +687,26 @@ function addFeed(text){
 addFeed('NexPath AI connected — monitoring active.');
 addFeed('Real activity will appear here instantly.');
 
+// CLOCK
 function tick(){const el=document.getElementById('clock');if(el)el.textContent=new Date().toUTCString().split(' ').slice(1,5).join(' ').replace('GMT','UTC');}
 tick();setInterval(tick,1000);
 
+// NOTIFY
 let nT;
 function notify(msg){const el=document.getElementById('notif');el.textContent=msg;el.classList.add('show');clearTimeout(nT);nT=setTimeout(()=>el.classList.remove('show'),4000);}
 setTimeout(()=>notify('🌍 NexPath AI — ONLINE. Built in Dubai for the world.'),1200);
 
+// SCROLL REVEAL
 const revObs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:0.1});
 document.querySelectorAll('.reveal').forEach(el=>revObs.observe(el));
 
+// NAV
 window.addEventListener('scroll',()=>{document.getElementById('mainnav').style.background=window.scrollY>50?'rgba(3,8,15,0.99)':'rgba(3,8,15,0.95)';});
 
+// SMOOTH SCROLL
 document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'});});});
 
-// Network canvas
+// NETWORK CANVAS
 const nc=document.getElementById('netCanvas'),nx=nc.getContext('2d');
 function resizeNet(){nc.width=window.innerWidth;nc.height=window.innerHeight;}
 resizeNet();window.addEventListener('resize',resizeNet);
@@ -601,32 +745,51 @@ function drawNet(){
 }
 drawNet();
 
-// Dashboard map
+// DASHBOARD MAP
 const dmC=document.getElementById('dashMapCanvas');
 if(dmC){
   const dmX=dmC.getContext('2d');
   function resizeDm(){dmC.width=dmC.parentElement.clientWidth;dmC.height=dmC.parentElement.clientHeight;}
   resizeDm();window.addEventListener('resize',resizeDm);
-  const CONTS=[[[.08,.18],[.14,.12],[.22,.10],[.28,.14],[.30,.22],[.26,.30],[.20,.36],[.15,.40],[.12,.32]],[[.20,.44],[.26,.41],[.32,.48],[.31,.60],[.26,.70],[.21,.74],[.18,.54]],[[.43,.20],[.48,.15],[.54,.15],[.56,.20],[.52,.26],[.46,.27]],[[.44,.32],[.52,.29],[.58,.33],[.60,.46],[.56,.60],[.50,.65],[.44,.60],[.41,.47]],[[.56,.16],[.66,.12],[.76,.13],[.84,.18],[.86,.26],[.80,.32],[.70,.34],[.60,.30]],[[.74,.36],[.82,.32],[.88,.38],[.86,.46],[.78,.48],[.72,.44]],[[.76,.60],[.84,.57],[.89,.62],[.87,.70],[.81,.74],[.75,.70]]];
+  const CONTS=[
+    [[.08,.18],[.14,.12],[.22,.10],[.28,.14],[.30,.22],[.26,.30],[.20,.36],[.15,.40],[.12,.32]],
+    [[.20,.44],[.26,.41],[.32,.48],[.31,.60],[.26,.70],[.21,.74],[.18,.54]],
+    [[.43,.20],[.48,.15],[.54,.15],[.56,.20],[.52,.26],[.46,.27]],
+    [[.44,.32],[.52,.29],[.58,.33],[.60,.46],[.56,.60],[.50,.65],[.44,.60],[.41,.47]],
+    [[.56,.16],[.66,.12],[.76,.13],[.84,.18],[.86,.26],[.80,.32],[.70,.34],[.60,.30]],
+    [[.74,.36],[.82,.32],[.88,.38],[.86,.46],[.78,.48],[.72,.44]],
+    [[.76,.60],[.84,.57],[.89,.62],[.87,.70],[.81,.74],[.75,.70]],
+  ];
   let DT=0;
   function drawDm(){
     const W=dmC.width,H=dmC.height;if(!W||!H){requestAnimationFrame(drawDm);return;}
     dmX.clearRect(0,0,W,H);
-    const g=dmX.createLinearGradient(0,0,W,H);g.addColorStop(0,'rgba(0,8,25,0.96)');g.addColorStop(1,'rgba(0,18,50,0.96)');dmX.fillStyle=g;dmX.fillRect(0,0,W,H);
+    const g=dmX.createLinearGradient(0,0,W,H);g.addColorStop(0,'rgba(0,8,25,0.96)');g.addColorStop(1,'rgba(0,18,50,0.96)');
+    dmX.fillStyle=g;dmX.fillRect(0,0,W,H);
     dmX.strokeStyle='rgba(0,80,150,0.08)';dmX.lineWidth=1;
     for(let i=0;i<W;i+=W/18){dmX.beginPath();dmX.moveTo(i,0);dmX.lineTo(i,H);dmX.stroke();}
     for(let j=0;j<H;j+=H/12){dmX.beginPath();dmX.moveTo(0,j);dmX.lineTo(W,j);dmX.stroke();}
-    CONTS.forEach(pts=>{dmX.beginPath();pts.forEach((p,i)=>i===0?dmX.moveTo(p[0]*W,p[1]*H):dmX.lineTo(p[0]*W,p[1]*H));dmX.closePath();dmX.fillStyle='rgba(0,55,130,0.55)';dmX.fill();dmX.strokeStyle='rgba(0,150,240,0.30)';dmX.lineWidth=1;dmX.stroke();});
+    CONTS.forEach(pts=>{
+      dmX.beginPath();pts.forEach((p,i)=>i===0?dmX.moveTo(p[0]*W,p[1]*H):dmX.lineTo(p[0]*W,p[1]*H));
+      dmX.closePath();dmX.fillStyle='rgba(0,55,130,0.55)';dmX.fill();
+      dmX.strokeStyle='rgba(0,150,240,0.30)';dmX.lineWidth=1;dmX.stroke();
+    });
     DT+=0.009;
     conns.forEach((pair,idx)=>{
-      const a=nodes[pair[0]],b=nodes[pair[1]];const ax=a.x*W,ay=a.y*H,bx=b.x*W,by=b.y*H;const cpx=(ax+bx)/2,cpy=Math.min(ay,by)-H*.12;
-      const prog=((DT*.6+idx*.18)%1);const px=qb(ax,cpx,bx,prog),py=qb(ay,cpy,by,prog);
-      dmX.beginPath();dmX.arc(px,py,2,0,Math.PI*2);dmX.fillStyle='rgba(0,212,255,0.9)';dmX.shadowColor='#00D4FF';dmX.shadowBlur=6;dmX.fill();dmX.shadowBlur=0;
+      const a=nodes[pair[0]],b=nodes[pair[1]];
+      const ax=a.x*W,ay=a.y*H,bx=b.x*W,by=b.y*H;
+      const cpx=(ax+bx)/2,cpy=Math.min(ay,by)-H*.12;
+      const prog=((DT*.6+idx*.18)%1);
+      const px=qb(ax,cpx,bx,prog),py=qb(ay,cpy,by,prog);
+      dmX.beginPath();dmX.arc(px,py,2,0,Math.PI*2);
+      dmX.fillStyle='rgba(0,212,255,0.9)';dmX.shadowColor='#00D4FF';dmX.shadowBlur=6;dmX.fill();dmX.shadowBlur=0;
     });
     nodes.forEach(n=>{
       const hx=n.x*W,hy=n.y*H,pulse=(Math.sin(DT*2.5+n.p)+1)/2;
-      dmX.beginPath();dmX.arc(hx,hy,4,0,Math.PI*2);dmX.fillStyle=n.col;dmX.shadowColor=n.col;dmX.shadowBlur=12;dmX.fill();dmX.shadowBlur=0;
-      dmX.beginPath();dmX.arc(hx,hy,6+pulse*5,0,Math.PI*2);dmX.strokeStyle=hexA(n.col,0.2+pulse*.2);dmX.lineWidth=1;dmX.stroke();
+      dmX.beginPath();dmX.arc(hx,hy,4,0,Math.PI*2);
+      dmX.fillStyle=n.col;dmX.shadowColor=n.col;dmX.shadowBlur=12;dmX.fill();dmX.shadowBlur=0;
+      dmX.beginPath();dmX.arc(hx,hy,6+pulse*5,0,Math.PI*2);
+      dmX.strokeStyle=hexA(n.col,0.2+pulse*.2);dmX.lineWidth=1;dmX.stroke();
     });
     requestAnimationFrame(drawDm);
   }
