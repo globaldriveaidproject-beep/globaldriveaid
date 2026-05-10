@@ -1,390 +1,102 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>NexPath AI Dashboard — Mankind Global</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-:root{
-  --orange:#FF6B1A;--blue:#00D4FF;--bg:#03080F;--bg2:#060E1A;
-  --border:rgba(0,180,255,0.13);--border-o:rgba(255,107,26,0.28);
-  --text:#D0E4F0;--text2:#5A7A8E;--white:#fff;
-  --green:#00FF88;--critical:#FF2D2D;--high:#FF8C00;--moderate:#FFD700;
+  <meta charset="UTF-8">
+  <title>Mankind Global – Pilot Mode</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle at top, #0a1a2f, #050d1a);
+      color: #e6f1ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+
+```
+.container {
+  max-width: 500px;
+  padding: 40px;
+  border-radius: 16px;
+  background: rgba(10, 25, 47, 0.8);
+  box-shadow: 0 0 40px rgba(0, 150, 255, 0.15);
+  border: 1px solid rgba(0, 150, 255, 0.2);
 }
-*{margin:0;padding:0;box-sizing:border-box;}
-body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;min-height:100vh;}
-#world-bg{position:fixed;inset:0;z-index:0;background-image:url('https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/1280px-Equirectangular_projection_SW.jpg');background-size:cover;background-position:center;opacity:0.08;filter:saturate(0) brightness(1.4) invert(1) sepia(1) saturate(3) hue-rotate(180deg);}
-#world-overlay{position:fixed;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,rgba(3,8,15,0.9) 0%,rgba(3,8,15,0.75) 50%,rgba(3,8,15,0.9) 100%);}
-#netCanvas{position:fixed;inset:0;z-index:0;width:100%;height:100%;opacity:0.4;}
-.scanlines{position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.03) 3px,rgba(0,0,0,0.03) 4px);}
 
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:500;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(3,8,15,0.97);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);}
-.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;}
-.nav-logo{width:32px;height:32px;border-radius:50%;border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:900;color:var(--orange);animation:lp 3s ease-in-out infinite;}
-@keyframes lp{0%,100%{box-shadow:0 0 0 0 rgba(255,107,26,0.4);}50%{box-shadow:0 0 0 6px rgba(255,107,26,0);}}
-.brand-name{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:800;color:var(--white);letter-spacing:2px;}
-.brand-sub{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--blue);letter-spacing:1.5px;}
-.nav-right{display:flex;align-items:center;gap:20px;}
-.nav-status{display:flex;align-items:center;gap:6px;font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--green);}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 1.8s infinite;}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.15;}}
-.pilot-badge{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--orange);background:rgba(255,107,26,0.08);border:1px solid var(--border-o);padding:4px 10px;border-radius:2px;letter-spacing:1px;}
-.nav-home{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text2);text-decoration:none;letter-spacing:1px;transition:color .2s;}
-.nav-home:hover{color:var(--orange);}
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
+}
 
-/* MAIN */
-.dashboard{position:relative;z-index:10;padding:72px 24px 24px;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto auto auto auto;gap:16px;max-width:1400px;margin:0 auto;}
+.tagline {
+  font-size: 13px;
+  color: #7fbfff;
+  margin-bottom: 30px;
+}
 
-/* CARDS */
-.card{background:rgba(6,14,26,0.85);border:1px solid var(--border);border-radius:6px;padding:20px;backdrop-filter:blur(8px);transition:border-color .2s;}
-.card:hover{border-color:rgba(0,180,255,0.22);}
-.card-title{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--blue);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
-.card-title span{color:var(--text2);font-size:8px;}
+.status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: rgba(255, 165, 0, 0.15);
+  color: #ffb84d;
+  font-size: 12px;
+  margin-bottom: 20px;
+}
 
-/* SYSTEM STATUS - spans full width */
-.card-full{grid-column:1/4;}
-.card-half{grid-column:span 1;}
+h1 {
+  font-size: 24px;
+  margin-bottom: 15px;
+}
 
-/* STATUS ROW */
-.status-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
-.status-val{font-family:'Orbitron',sans-serif;font-size:13px;font-weight:700;color:var(--green);}
-.status-sub{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:1px;}
+p {
+  font-size: 14px;
+  color: #b3c7e6;
+  line-height: 1.6;
+}
 
-/* METRICS GRID */
-.metrics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
-.metric{text-align:center;padding:16px 8px;border:1px solid var(--border);border-radius:4px;background:rgba(0,0,0,0.2);transition:border-color .2s;}
-.metric:hover{border-color:var(--border-o);}
-.metric-value{font-family:'Orbitron',sans-serif;font-size:28px;font-weight:900;color:var(--orange);line-height:1;margin-bottom:4px;}
-.metric-label{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text2);letter-spacing:1.5px;text-transform:uppercase;}
-.metric-note{font-family:'Share Tech Mono',monospace;font-size:7px;color:var(--green);margin-top:3px;opacity:0.8;}
+.footer {
+  margin-top: 30px;
+  font-size: 12px;
+  color: #5f7ea3;
+}
+```
 
-/* MISSION CARD */
-.mission-item{padding:14px;border:1px solid rgba(0,255,136,0.2);border-radius:4px;background:rgba(0,255,136,0.03);position:relative;overflow:hidden;}
-.mission-item::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),var(--blue));}
-.mission-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-.mission-ref{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--green);letter-spacing:1px;}
-.mission-badge{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--green);background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.3);padding:2px 8px;border-radius:2px;}
-.mission-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
-.mission-field{display:flex;flex-direction:column;gap:2px;}
-.mf-label{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text2);letter-spacing:1px;text-transform:uppercase;}
-.mf-value{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:600;color:var(--text);}
-.mission-historic{margin-top:10px;padding-top:10px;border-top:1px solid rgba(0,255,136,0.15);font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--green);letter-spacing:1px;display:flex;align-items:center;gap:6px;}
-.mdot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1.8s infinite;flex-shrink:0;}
-
-/* AI ENGINE */
-.engine-row{display:flex;justify-content:space-between;align-items:center;font-family:'Share Tech Mono',monospace;font-size:9px;padding:6px 0;border-bottom:1px solid rgba(0,100,180,0.1);}
-.engine-row:last-child{border-bottom:none;}
-.er-name{color:var(--text2);letter-spacing:1px;}
-.er-val{color:var(--green);}
-.conf-bar{height:4px;background:rgba(255,255,255,0.05);border-radius:2px;overflow:hidden;margin-top:10px;}
-.conf-fill{height:100%;width:100%;background:linear-gradient(90deg,var(--green),var(--blue));border-radius:2px;}
-.conf-num{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:800;color:var(--green);margin-top:6px;}
-
-/* FEED */
-.feed-item{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid rgba(0,80,140,0.1);}
-.fi-dot{width:4px;height:4px;border-radius:50%;background:var(--blue);margin-top:5px;flex-shrink:0;box-shadow:0 0 5px var(--blue);}
-.fi-time{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--text2);white-space:nowrap;min-width:32px;}
-.fi-text{font-family:'Rajdhani',sans-serif;font-size:13px;color:var(--text);line-height:1.3;}
-
-/* MAP */
-.map-container{position:relative;height:200px;background:rgba(0,8,20,0.8);border-radius:4px;overflow:hidden;}
-#dashMap{width:100%;height:100%;display:block;}
-.map-label{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--green);letter-spacing:1px;background:rgba(3,8,15,0.9);padding:4px 12px;border-radius:2px;border:1px solid rgba(0,255,136,0.3);white-space:nowrap;}
-
-/* SUPPORTERS */
-.supporters-count{font-family:'Orbitron',sans-serif;font-size:36px;font-weight:900;color:var(--blue);line-height:1;margin-bottom:4px;}
-.supporters-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:2px;text-transform:uppercase;}
-.supporters-note{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--green);margin-top:4px;opacity:0.8;}
-
-/* CLOCK */
-.dash-clock{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:1px;}
-
-::-webkit-scrollbar{width:4px;}
-::-webkit-scrollbar-thumb{background:rgba(255,107,26,0.25);border-radius:2px;}
-</style>
+  </style>
 </head>
 <body>
 
-<div id="world-bg"></div>
-<div id="world-overlay"></div>
-<canvas id="netCanvas"></canvas>
-<div class="scanlines"></div>
+  <div class="container">
+    <div class="logo">MANKIND GLOBAL</div>
+    <div class="tagline">AI-powered humanitarian platform</div>
 
-<nav>
-  <a class="nav-brand" href="index.html">
-    <div class="nav-logo">MG</div>
-    <div>
-      <div class="brand-name">MANKIND GLOBAL</div>
-      <div class="brand-sub">NEXPATH AI DASHBOARD</div>
-    </div>
-  </a>
-  <div class="nav-right">
-    <span class="pilot-badge">◆ PILOT MODE ACTIVE</span>
-    <div class="nav-status"><div class="dot"></div>SYSTEM ONLINE</div>
-    <span class="dash-clock" id="clock"></span>
-    <a class="nav-home" href="index.html">← HOME</a>
-  </div>
-</nav>
+```
+<div class="status">🔒 Pilot Mode Active</div>
 
-<div class="dashboard">
+<h1>Private Pilot Phase</h1>
 
-  <!-- SYSTEM STATUS — full width -->
-  <div class="card card-full">
-    <div class="card-title">System Status <span id="last-updated">Connecting to database...</span></div>
-    <div class="metrics-grid">
-      <div class="metric">
-        <div class="metric-value" id="m-requests">—</div>
-        <div class="metric-label">Aid Requests</div>
-        <div class="metric-note" id="m-req-note">● Live</div>
-      </div>
-      <div class="metric">
-        <div class="metric-value" id="m-delivered">—</div>
-        <div class="metric-label">Aid Delivered</div>
-        <div class="metric-note">● Live</div>
-      </div>
-      <div class="metric">
-        <div class="metric-value" id="m-volunteers">—</div>
-        <div class="metric-label">Volunteers</div>
-        <div class="metric-note">● Live</div>
-      </div>
-      <div class="metric">
-        <div class="metric-value" id="m-supporters">—</div>
-        <div class="metric-label">Early Supporters</div>
-        <div class="metric-note">● Live</div>
-      </div>
-    </div>
-  </div>
+<p>
+  Mankind Global is currently operating in a controlled pilot phase.
+  Platform access is limited while we validate real-world impact and system performance.
+</p>
 
-  <!-- ACTIVE MISSION -->
-  <div class="card card-half">
-    <div class="card-title">First Verified Mission</div>
-    <div class="mission-item">
-      <div class="mission-header">
-        <span class="mission-ref">MGX-4F1A03</span>
-        <span class="mission-badge">✓ COMPLETED</span>
-      </div>
-      <div class="mission-grid">
-        <div class="mission-field"><span class="mf-label">📍 Location</span><span class="mf-value">Nairobi, Kenya</span></div>
-        <div class="mission-field"><span class="mf-label">🍞 Aid Type</span><span class="mf-value">Food Assistance</span></div>
-        <div class="mission-field"><span class="mf-label">👤 Supported</span><span class="mf-value">1 individual (pilot case)</span></div>
-        <div class="mission-field"><span class="mf-label">💰 Deployed</span><span class="mf-value">$10 — Founder</span></div>
-        <div class="mission-field"><span class="mf-label">⏱ Delivery</span><span class="mf-value">Same Day</span></div>
-        <div class="mission-field"><span class="mf-label">📅 Date</span><span class="mf-value">May 2025</span></div>
-      </div>
-      <div class="mission-historic"><div class="mdot"></div>First successful end-to-end transaction on the platform</div>
-    </div>
-  </div>
+<p>
+  Public launch and organization registration will follow after pilot completion.
+</p>
 
-  <!-- LIVE FEED -->
-  <div class="card card-half">
-    <div class="card-title">Live Activity Feed <span style="color:var(--green);">● LIVE</span></div>
-    <div id="live-feed">
-      <div class="feed-item"><div class="fi-dot"></div><span class="fi-time">now</span><span class="fi-text">NexPath AI system online — pilot mode active</span></div>
-      <div class="feed-item"><div class="fi-dot"></div><span class="fi-time">—</span><span class="fi-text">Donation allocated — $10 · Founder pilot case</span></div>
-      <div class="feed-item"><div class="fi-dot"></div><span class="fi-time">—</span><span class="fi-text">AI matched request — Food Assistance · Nairobi</span></div>
-      <div class="feed-item"><div class="fi-dot"></div><span class="fi-time">—</span><span class="fi-text">Delivery completed — 1 individual supported</span></div>
-      <div class="feed-item"><div class="fi-dot"></div><span class="fi-time">—</span><span class="fi-text">Impact verified · Reference MGX-4F1A03</span></div>
-    </div>
-  </div>
-
-  <!-- NEXPATH AI ENGINE -->
-  <div class="card card-half">
-    <div class="card-title">NexPath AI Engine</div>
-    <div class="engine-row"><span class="er-name">MATCH ENGINE</span><span class="er-val">● ACTIVE</span></div>
-    <div class="engine-row"><span class="er-name">CRISIS SIGNAL DETECTION</span><span class="er-val">● ACTIVE</span></div>
-    <div class="engine-row"><span class="er-name">LOGISTICS COORDINATOR</span><span class="er-val">● ACTIVE</span></div>
-    <div class="engine-row"><span class="er-name">DONATION TRACKER</span><span class="er-val">● ACTIVE (PILOT)</span></div>
-    <div class="engine-row"><span class="er-name">IMPACT VERIFIER</span><span class="er-val">● ACTIVE</span></div>
-    <div class="conf-bar"><div class="conf-fill"></div></div>
-    <div class="conf-num">100% <span style="font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text2);">PILOT MATCH RATE</span></div>
-  </div>
-
-  <!-- GLOBAL ACTIVITY MAP -->
-  <div class="card" style="grid-column:1/3;">
-    <div class="card-title">Global Activity Map <span>1 completed mission</span></div>
-    <div class="map-container">
-      <canvas id="dashMap"></canvas>
-      <div class="map-label">📍 Nairobi, Kenya — Pilot Mission Completed ✓</div>
-    </div>
-  </div>
-
-  <!-- EARLY SUPPORTERS -->
-  <div class="card card-half">
-    <div class="card-title">Early Supporters</div>
-    <div class="supporters-count" id="s-count">—</div>
-    <div class="supporters-label">Registered Interest</div>
-    <div class="supporters-note" id="s-note">● Live from database</div>
-    <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
-      <div class="engine-row"><span class="er-name">DONORS REGISTERED</span><span class="er-val" id="s-donors">—</span></div>
-      <div class="engine-row"><span class="er-name">VOLUNTEERS REGISTERED</span><span class="er-val" id="s-vols">—</span></div>
-      <div class="engine-row" style="border:none;"><span class="er-name">PARTNERS REGISTERED</span><span class="er-val" id="s-partners">—</span></div>
-    </div>
-  </div>
-
+<div class="footer">
+  © 2026 Mankind Global Initiative
 </div>
+```
 
-<script>
-// SUPABASE
-const { createClient } = supabase;
-const sb = createClient(
-  'https://ehlbtosecxhneixkmcab.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVobGJ0b3NlY3hobmVpeGttY2FiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0NDE2MTEsImV4cCI6MjA5MzAxNzYxMX0.IbLP1mXF-U-UtcGtYTQqqjZFDFwGbkF8HL974J_3iWo'
-);
+  </div>
 
-function set(id, val) { const el = document.getElementById(id); if(el) el.textContent = val; }
-function fmt(n) { return (n||0).toLocaleString(); }
-
-async function loadStats() {
-  try {
-    const [reqRes, volRes, supRes] = await Promise.all([
-      sb.from('aid_requests').select('*', { count:'exact', head:true }),
-      sb.from('volunteers').select('*', { count:'exact', head:true }),
-      sb.from('early_supporters').select('*', { count:'exact', head:true }),
-    ]);
-
-    const requests   = reqRes.count  || 0;
-    const volunteers = volRes.count  || 0;
-    const supporters = supRes.count  || 0;
-
-    const { count: delivered } = await sb.from('aid_requests').select('*',{count:'exact',head:true}).eq('status','completed');
-
-    // Supporter breakdown
-    const { count: donors }   = await sb.from('early_supporters').select('*',{count:'exact',head:true}).eq('support_type','donor');
-    const { count: vols }     = await sb.from('early_supporters').select('*',{count:'exact',head:true}).eq('support_type','volunteer');
-    const { count: partners } = await sb.from('early_supporters').select('*',{count:'exact',head:true}).eq('support_type','partner');
-
-    set('m-requests',  fmt(requests  + 1)); // +1 for pilot case
-    set('m-delivered', fmt((delivered||0) + 1)); // +1 for pilot case
-    set('m-volunteers',fmt(volunteers));
-    set('m-supporters',fmt(supporters));
-    set('s-count',     fmt(supporters));
-    set('s-donors',    fmt(donors||0));
-    set('s-vols',      fmt(vols||0));
-    set('s-partners',  fmt(partners||0));
-    set('m-req-note',  `● ${requests} in database + 1 pilot`);
-    set('last-updated', `Updated ${new Date().toLocaleTimeString()}`);
-
-  } catch(e) {
-    console.error('Stats error:', e);
-    set('last-updated', 'Connection error — retrying...');
-  }
-}
-
-loadStats();
-setInterval(loadStats, 30000);
-
-// REALTIME
-sb.channel('dashboard-rt')
-  .on('postgres_changes',{event:'INSERT',schema:'public',table:'aid_requests'}, p => {
-    loadStats();
-    addFeed(`New ${p.new.urgency} request — ${p.new.aid_type} — ${p.new.city}, ${p.new.country}`);
-  })
-  .on('postgres_changes',{event:'INSERT',schema:'public',table:'early_supporters'}, p => {
-    loadStats();
-    addFeed(`New early supporter registered — ${p.new.country || 'Unknown'}`);
-  })
-  .subscribe();
-
-function addFeed(text) {
-  const feed = document.getElementById('live-feed');
-  const now  = new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
-  const d = document.createElement('div');
-  d.className = 'feed-item';
-  d.innerHTML = `<div class="fi-dot"></div><span class="fi-time">${now}</span><span class="fi-text">${text}</span>`;
-  feed.insertBefore(d, feed.firstChild);
-  if (feed.children.length > 10) feed.removeChild(feed.lastChild);
-}
-
-// CLOCK
-function tick() { set('clock', new Date().toUTCString().split(' ').slice(1,5).join(' ').replace('GMT','UTC')); }
-tick(); setInterval(tick, 1000);
-
-// NETWORK CANVAS (background)
-const nc = document.getElementById('netCanvas'), nx = nc.getContext('2d');
-function resizeNet() { nc.width=window.innerWidth; nc.height=window.innerHeight; }
-resizeNet(); window.addEventListener('resize', resizeNet);
-const nodes = [
-  {x:.535,y:.52,col:'#FF2D2D',p:0},{x:.562,y:.42,col:'#FF2D2D',p:1},
-  {x:.240,y:.50,col:'#FF8C00',p:2},{x:.600,y:.48,col:'#FF8C00',p:3},
-  {x:.515,y:.60,col:'#FF8C00',p:4},{x:.610,y:.25,col:'#00D4FF',p:1},
-  {x:.420,y:.62,col:'#00FF88',p:3}, // Nairobi - green (completed)
-];
-const conns = [[0,1],[1,3],[2,3],[4,5],[6,5]];
-let NT = 0;
-function qb(p0,p1,p2,t){return(1-t)*(1-t)*p0+2*(1-t)*t*p1+t*t*p2;}
-function hexA(hex,a){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgba(${r},${g},${b},${a})`;}
-function drawNet(){
-  nx.clearRect(0,0,nc.width,nc.height);NT+=0.007;
-  conns.forEach((pair,idx)=>{
-    const a=nodes[pair[0]],b=nodes[pair[1]];
-    const ax=a.x*nc.width,ay=a.y*nc.height,bx=b.x*nc.width,by=b.y*nc.height;
-    const cpx=(ax+bx)/2,cpy=Math.min(ay,by)-nc.height*.10;
-    nx.beginPath();nx.moveTo(ax,ay);nx.quadraticCurveTo(cpx,cpy,bx,by);
-    nx.strokeStyle='rgba(0,160,255,0.06)';nx.lineWidth=1;nx.setLineDash([3,8]);nx.stroke();nx.setLineDash([]);
-    const prog=((NT*.4+idx*.15)%1);
-    const px=qb(ax,cpx,bx,prog),py=qb(ay,cpy,by,prog);
-    nx.beginPath();nx.arc(px,py,2,0,Math.PI*2);nx.fillStyle='rgba(0,212,255,0.8)';nx.fill();
-  });
-  nodes.forEach(n=>{
-    const hx=n.x*nc.width,hy=n.y*nc.height,pulse=(Math.sin(NT*2.5+n.p)+1)/2;
-    nx.beginPath();nx.arc(hx,hy,8+pulse*6,0,Math.PI*2);nx.strokeStyle=hexA(n.col,0.10+pulse*.10);nx.lineWidth=1;nx.stroke();
-    nx.beginPath();nx.arc(hx,hy,4,0,Math.PI*2);nx.fillStyle=n.col;nx.shadowColor=n.col;nx.shadowBlur=14;nx.fill();nx.shadowBlur=0;
-  });
-  requestAnimationFrame(drawNet);
-}
-drawNet();
-
-// DASHBOARD MAP
-const dmC = document.getElementById('dashMap');
-if(dmC){
-  const dmX = dmC.getContext('2d');
-  function resizeDm(){dmC.width=dmC.parentElement.clientWidth;dmC.height=dmC.parentElement.clientHeight;}
-  resizeDm();window.addEventListener('resize',resizeDm);
-  const CONTS=[
-    [[.08,.18],[.14,.12],[.22,.10],[.28,.14],[.30,.22],[.26,.30],[.20,.36],[.15,.40],[.12,.32]],
-    [[.20,.44],[.26,.41],[.32,.48],[.31,.60],[.26,.70],[.21,.74],[.18,.54]],
-    [[.43,.20],[.48,.15],[.54,.15],[.56,.20],[.52,.26],[.46,.27]],
-    [[.44,.32],[.52,.29],[.58,.33],[.60,.46],[.56,.60],[.50,.65],[.44,.60],[.41,.47]],
-    [[.56,.16],[.66,.12],[.76,.13],[.84,.18],[.86,.26],[.80,.32],[.70,.34],[.60,.30]],
-    [[.74,.36],[.82,.32],[.88,.38],[.86,.46],[.78,.48],[.72,.44]],
-    [[.76,.60],[.84,.57],[.89,.62],[.87,.70],[.81,.74],[.75,.70]],
-  ];
-  // Nairobi position
-  const NAIROBI = {x: 0.565, y: 0.56};
-  let DT = 0;
-  function drawDm(){
-    const W=dmC.width,H=dmC.height;if(!W||!H){requestAnimationFrame(drawDm);return;}
-    dmX.clearRect(0,0,W,H);
-    const g=dmX.createLinearGradient(0,0,W,H);g.addColorStop(0,'rgba(0,8,25,0.96)');g.addColorStop(1,'rgba(0,18,50,0.96)');
-    dmX.fillStyle=g;dmX.fillRect(0,0,W,H);
-    dmX.strokeStyle='rgba(0,80,150,0.07)';dmX.lineWidth=1;
-    for(let i=0;i<W;i+=W/18){dmX.beginPath();dmX.moveTo(i,0);dmX.lineTo(i,H);dmX.stroke();}
-    for(let j=0;j<H;j+=H/12){dmX.beginPath();dmX.moveTo(0,j);dmX.lineTo(W,j);dmX.stroke();}
-    CONTS.forEach(pts=>{
-      dmX.beginPath();pts.forEach((p,i)=>i===0?dmX.moveTo(p[0]*W,p[1]*H):dmX.lineTo(p[0]*W,p[1]*H));
-      dmX.closePath();dmX.fillStyle='rgba(0,55,130,0.50)';dmX.fill();
-      dmX.strokeStyle='rgba(0,150,240,0.25)';dmX.lineWidth=1;dmX.stroke();
-    });
-    DT+=0.012;
-    // Nairobi pulse — green (completed mission)
-    const hx=NAIROBI.x*W,hy=NAIROBI.y*H;
-    const pulse=(Math.sin(DT*2.5)+1)/2;
-    dmX.beginPath();dmX.arc(hx,hy,14+pulse*8,0,Math.PI*2);
-    dmX.strokeStyle=`rgba(0,255,136,${0.12+pulse*.12})`;dmX.lineWidth=1;dmX.stroke();
-    dmX.beginPath();dmX.arc(hx,hy,8+pulse*4,0,Math.PI*2);
-    dmX.strokeStyle=`rgba(0,255,136,${0.25+pulse*.2})`;dmX.lineWidth=1;dmX.stroke();
-    dmX.beginPath();dmX.arc(hx,hy,5,0,Math.PI*2);
-    dmX.fillStyle='#00FF88';dmX.shadowColor='#00FF88';dmX.shadowBlur=18;dmX.fill();dmX.shadowBlur=0;
-    dmX.font='bold 10px Rajdhani, sans-serif';
-    dmX.fillStyle='rgba(0,255,136,0.9)';
-    dmX.fillText('NAIROBI ✓',hx+10,hy-6);
-    requestAnimationFrame(drawDm);
-  }
-  setTimeout(drawDm,200);
-}
-</script>
 </body>
 </html>
